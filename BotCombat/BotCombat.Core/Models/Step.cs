@@ -7,17 +7,21 @@ namespace BotCombat.Core
     /// </summary>
     public class Step
     {
-        public Step(int number, MapSettings mapSettings, IEnumerable<IMapObject> walls, IEnumerable<IMapObject> bonuses, IEnumerable<BotContainer> bots)
+        public Step(int number, MapSettings mapSettings, 
+            IEnumerable<IMapObject> walls, 
+            IEnumerable<IMapObject> bonuses,
+            IEnumerable<BotContainer> bots,
+            IEnumerable<DamageLog> damageLogs)
         {
             Number = number;
             Map = mapSettings.ToMapModel();
             Walls = walls.ToMapObjectModels();
             Bonuses = bonuses.ToMapObjectModels();
             Bots = bots.ToMapBotModels();
+            DamageLogs = damageLogs.ToDamageLogModels();
         }
 
         public int Number { get; }
-
         public Models.Map Map { get; }
 
         public IReadOnlyList<Models.Object> Walls { get; }
@@ -26,5 +30,6 @@ namespace BotCombat.Core
 
         public IReadOnlyDictionary<int, Models.Bot> Bots { get; }
 
+        public IReadOnlyList<DamageLog> DamageLogs { get; }
     }
 }

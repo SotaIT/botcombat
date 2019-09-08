@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BotCombat.Core
 {
-    public static class MapUtils
+    internal static class MapUtils
     {
         public static Coordinates GetDestination(int x, int y, MoveDirection direction)
         {
@@ -62,6 +62,11 @@ namespace BotCombat.Core
                 botContainer.Y,
                 botContainer.Stamina,
                 botContainer.Strength);
+        }
+
+        public static IReadOnlyList<DamageLog> ToDamageLogModels(this IEnumerable<DamageLog> damageLogs)
+        {
+            return new ReadOnlyCollection<DamageLog>(damageLogs.ToList());
         }
     }
 }

@@ -10,9 +10,9 @@ namespace BotCombat.Core
 
         private readonly MapSettings _mapSettings;
 
-        private readonly List<Wall> _walls  = new List<Wall>();
+        private readonly List<Wall> _walls = new List<Wall>();
 
-        private readonly List<Bonus> _bonuses  = new List<Bonus>();
+        private readonly List<Bonus> _bonuses = new List<Bonus>();
 
         private readonly List<BotContainer> _bots = new List<BotContainer>();
 
@@ -22,6 +22,8 @@ namespace BotCombat.Core
 
         private readonly List<Step> _steps = new List<Step>();
 
+        private readonly List<DamageLog> _damageLogs = new List<DamageLog>();
+
         public Step CurrentStep { get => _steps[_steps.Count - 1]; }
 
         public Map(MapSettings mapSettings, List<IBot> bots)
@@ -30,11 +32,11 @@ namespace BotCombat.Core
             _mapPoints = new List<IMapObject>[_mapSettings.Width, _mapSettings.Height];
 
             InitMapPoints();
-            
+
             AddWalls();
-            
+
             AddBonuses();
-            
+
             AddBots(bots);
         }
 
@@ -80,7 +82,7 @@ namespace BotCombat.Core
             foreach (var wall in _mapSettings.Walls)
                 if (_mapPoints[wall.X, wall.Y].Count == 0)
                 {
-                    _mapPoints[wall.X, wall.Y].Add(wall); 
+                    _mapPoints[wall.X, wall.Y].Add(wall);
                     _walls.Add(wall);
                 }
             CreateStep();
@@ -137,15 +139,17 @@ namespace BotCombat.Core
                 _mapSettings,
                 _walls,
                 _bonuses,
-                _bots
+                _bots,
+                _damageLogs.Where(l => l.Step == _steps.Count)
                 ));
         }
 
-        public void Step()
+        public Step Step()
         {
             MoveBots();
             ComputeCollisions();
             CreateStep();
+            return CurrentStep;
         }
 
         private void MoveBots()
@@ -166,7 +170,7 @@ namespace BotCombat.Core
             var point = MapUtils.GetDestination(bot.X, bot.Y, direction);
 
             // bot is going to move out of the map - stop
-            if (point.X > _mapSettings.Width || point.X < 0 || point.Y > _mapSettings.Height || point.Y < 0)
+            if (point.X >= _mapSettings.Width || point.X < 0 || point.Y >= _mapSettings.Height || point.Y < 0)
                 return bot;
 
             // if there is a wall at the destination point - stop
@@ -230,12 +234,14 @@ namespace BotCombat.Core
             foreach (var damagerBot in bots)
                 foreach (var damagedBot in bots)
                     if (damagerBot.Id != damagedBot.Id) // todo: implement Equals
-                        Damage(damagedBot, damagerBot.Strength);
+                        Damage(damagerBot, damagedBot);
         }
 
-        private void Damage(BotContainer bot, int strength)
+        private void Damage(BotContainer source, BotContainer target)
         {
-            _damageTaken[bot.Id] += strength * _mapSettings.StrengthWeight;
+            var damage = source.Strength * _mapSettings.StrengthWeight;
+            _damageTaken[target.Id] += damage;
+            _damageLogs.Add(new DamageLog(_steps.Count, source.X, source.Y, source.Id, target.Id, damage));
         }
     }
 }
