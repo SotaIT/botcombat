@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotCombat.Core", "BotCombat.Core\BotCombat.Core.csproj", "{3CCD60A3-E413-49B9-A468-6E68DBA2468B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotCombat.TestApp", "BotCombat.TestApp\BotCombat.TestApp.csproj", "{FEA152CA-7495-4DFB-96C3-A453DFC3076D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3CCD60A3-E413-49B9-A468-6E68DBA2468B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CCD60A3-E413-49B9-A468-6E68DBA2468B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CCD60A3-E413-49B9-A468-6E68DBA2468B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CCD60A3-E413-49B9-A468-6E68DBA2468B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEA152CA-7495-4DFB-96C3-A453DFC3076D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEA152CA-7495-4DFB-96C3-A453DFC3076D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEA152CA-7495-4DFB-96C3-A453DFC3076D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEA152CA-7495-4DFB-96C3-A453DFC3076D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {50B50415-4DC2-4974-804C-FE77A5937094}
+	EndGlobalSection
+EndGlobal
