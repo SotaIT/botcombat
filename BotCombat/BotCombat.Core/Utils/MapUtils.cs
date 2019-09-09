@@ -60,7 +60,7 @@ namespace BotCombat.Core
         public static IList<Abstractions.Models.Log> ToLogModels(this IEnumerable<Log> logs)
         {
             return logs
-                .Select(dl => new Abstractions.Models.Log(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Damage))
+                .Select(dl => new Abstractions.Models.Log(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Value))
                 .ToList();
         }
     }

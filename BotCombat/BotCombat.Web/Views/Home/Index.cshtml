@@ -2,7 +2,7 @@
 @using BotCombat.Core
 @{
     ViewData["Title"] = "Home Page";
-    var mapSettings = ViewData["MapSettings"] as MapSettings;
+    var map = ViewData["Map"] as Map;
     var steps = ViewData["Steps"] as List<Step>;
 }
 @functions
@@ -34,15 +34,15 @@
     static string GetLog(BotCombat.Abstractions.Models.Log log)
     {
         return log.SourceId==0
-                ? $"\"Bot #{log.TargetId} got {log.Damage} power at ({log.X}, {log.Y})\""
-                : $"\"Bot #{log.SourceId} damaged bot #{log.TargetId} for {log.Damage} at ({log.X}, {log.Y})\"";
+                ? $"\"Bot #{log.TargetId} got {log.Value} power at ({log.X}, {log.Y})\""
+                : $"\"Bot #{log.SourceId} damaged bot #{log.TargetId} for {log.Value} at ({log.X}, {log.Y})\"";
     }
 }
 
-@if (steps != null && mapSettings != null)
+@if (steps != null && map != null)
 {
-    var width = mapSettings.Width * Scale;
-    var height = mapSettings.Height * Scale;
+    var width = map.Width * Scale;
+    var height = map.Height * Scale;
 
     <script>
 

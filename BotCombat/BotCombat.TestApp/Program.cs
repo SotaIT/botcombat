@@ -11,7 +11,7 @@ namespace BotCombat.TestApp
 {
     internal class Program
     {
-        private static Map _map;
+        private static MapManager _mapManager;
 
         private static void Main(string[] args)
         {
@@ -25,13 +25,13 @@ namespace BotCombat.TestApp
                     JsBot.DefaultChooseDirectionScript),
                 new CsBot(4, 100000, CsBot.DefaultSourceCode)
             };
-            var mapSettings = new MapSettings(1, 5, 5, 32, 10, 1, 1, walls, bonuses);
+            var map = new Map(1, 5, 5, 32, 10, 1, 1, walls, bonuses);
 
-            _map = new Map(mapSettings, bots);
+            _mapManager = new MapManager(map, bots);
 
             for (var i = 0; i < 100; i++)
             {
-                var step = _map.Step();
+                var step = _mapManager.Step();
                 DrawStep(step);
 
                 if (step.Bots.Count < 2)
@@ -76,7 +76,7 @@ namespace BotCombat.TestApp
 
             foreach (var dl in step.Logs)
                 Console.WriteLine(
-                    $"Bot {dl.SourceId} made {dl.Damage} damage to bot {dl.TargetId} at ({dl.X}, {dl.Y}).");
+                    $"Bot {dl.SourceId} made {dl.Value} damage to bot {dl.TargetId} at ({dl.X}, {dl.Y}).");
         }
 
         private static void HLine(Step step)

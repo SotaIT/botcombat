@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using BotCombat.Abstractions;
 using BotCombat.Core;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +16,7 @@ namespace BotCombat.Web.Controllers
             
             var walls = new List<Wall> { new Wall(3, 3), new Wall(3, 4), new Wall(3, 5), new Wall(7, 2), new Wall(8, 2)};
             
-            var bonuses = new List<Bonus> { new Bonus(0, 0, 5), new Bonus(2, 1, 3), new Bonus(3, 4, 15), new Bonus(13, 11, 8) };
+            var bonuses = new List<Core.Bonus> { new Core.Bonus(0, 0, 5), new Core.Bonus(2, 1, 3), new Core.Bonus(3, 4, 15), new Core.Bonus(13, 11, 8) };
 
             var bots = new List<IBot>
             {
@@ -27,15 +26,15 @@ namespace BotCombat.Web.Controllers
                     JsBot.DefaultChooseDirectionScript),
                 new CsBot(4, 100000, CsBot.DefaultSourceCode)
             };
-            var mapSettings = new MapSettings(1, 20, 20, 32, 10, 1, 1, walls, bonuses);
-            ViewData["MapSettings"] = mapSettings;
+            var map = new Map(1, 20, 20, 32, 10, 1, 1, walls, bonuses);
+            ViewData["Map"] = map;
 
-            var map = new Map(mapSettings, bots);
+            var mapManager = new MapManager(map, bots);
 
             var steps = new List<Step>();
             while(true)
             {
-                var step = map.Step();
+                var step = mapManager.Step();
                 steps.Add(step);
 
                 if (step.Bots.Count < 2)
