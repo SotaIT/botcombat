@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BotCombat.Abstractions;
+using BotCombat.Abstractions.Models;
 using Jint;
 
 namespace BotCombat.Js

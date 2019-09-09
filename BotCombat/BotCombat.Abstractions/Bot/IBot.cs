@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BotCombat.Abstractions.Models;
 
 namespace BotCombat.Abstractions
 {

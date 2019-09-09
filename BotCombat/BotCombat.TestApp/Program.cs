@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using BotCombat.Abstractions;
+using BotCombat.Abstractions.Models;
 using BotCombat.Core;
 using BotCombat.Cs;
 using BotCombat.Js;
+using Map = BotCombat.Core.Map;
 
 namespace BotCombat.TestApp
 {

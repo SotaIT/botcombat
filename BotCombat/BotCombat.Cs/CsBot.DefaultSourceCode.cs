@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 using BotCombat.Abstractions;
-
+using BotCombat.Abstractions.Models;
 
     public class ExampleCsBot : BaseBot
     {

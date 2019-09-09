@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using BotCombat.Abstractions.Models;
 
-// ReSharper disable once CheckNamespace
-namespace BotCombat.Abstractions
+namespace BotCombat.Abstractions.Models
 {
     /// <summary>
     /// The model of the current step

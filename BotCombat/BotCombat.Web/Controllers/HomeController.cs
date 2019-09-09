@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using BotCombat.Abstractions;
+using BotCombat.Abstractions.Models;
 using BotCombat.Core;
 using Microsoft.AspNetCore.Mvc;
 using BotCombat.Web.Models;
 using BotCombat.Js;
 using BotCombat.Cs;
+using Map = BotCombat.Core.Map;
 
 namespace BotCombat.Web.Controllers
 {

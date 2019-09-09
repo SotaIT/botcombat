@@ -1,6 +1,7 @@
 ﻿using BotCombat.Abstractions;
 using BotCombat.Cs;
 using System.Collections.Generic;
+using BotCombat.Abstractions.Models;
 
 namespace BotCombat.TestApp
 {
