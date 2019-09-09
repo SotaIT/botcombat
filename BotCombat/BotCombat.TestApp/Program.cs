@@ -74,7 +74,7 @@ namespace BotCombat.TestApp
                 HLine(step);
             }
 
-            foreach (var dl in step.DamageLogs)
+            foreach (var dl in step.Logs)
                 Console.WriteLine(
                     $"Bot {dl.SourceId} made {dl.Damage} damage to bot {dl.TargetId} at ({dl.X}, {dl.Y}).");
         }

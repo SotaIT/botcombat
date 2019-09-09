@@ -57,10 +57,10 @@ namespace BotCombat.Core
                 botContainer.Strength);
         }
 
-        public static IList<Abstractions.Models.DamageLog> ToDamageLogModels(this IEnumerable<DamageLog> damageLogs)
+        public static IList<Abstractions.Models.Log> ToLogModels(this IEnumerable<Log> logs)
         {
-            return damageLogs
-                .Select(dl => new Abstractions.Models.DamageLog(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Damage))
+            return logs
+                .Select(dl => new Abstractions.Models.Log(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Damage))
                 .ToList();
         }
     }

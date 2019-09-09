@@ -17,14 +17,16 @@ namespace BotCombat.Abstractions
             IList<Object> walls,
             IList<Object> bonuses,
             IDictionary<int, Bot> bots,
-            IList<DamageLog> damageLogs)
+            IList<Log> logs,
+            IList<int> deadBots)
         {
             Number = number;
             Map = new Map(mapId, width, height);
             Walls = new ReadOnlyCollection<Object>(walls);
             Bonuses = new ReadOnlyCollection<Object>(bonuses);
             Bots = new ReadOnlyDictionary<int, Bot>(bots);
-            DamageLogs = new ReadOnlyCollection<DamageLog>(damageLogs);
+            Logs = new ReadOnlyCollection<Log>(logs);
+            DeadBots = new ReadOnlyCollection<int>(deadBots);
         }
 
         public int Number { get; }
@@ -37,6 +39,8 @@ namespace BotCombat.Abstractions
 
         public IReadOnlyDictionary<int, Bot> Bots { get; }
 
-        public IReadOnlyList<DamageLog> DamageLogs { get; }
+        public IReadOnlyList<Log> Logs { get; }
+
+        public IReadOnlyList<int> DeadBots { get; }
     }
 }

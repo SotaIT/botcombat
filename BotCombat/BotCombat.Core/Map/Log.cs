@@ -1,9 +1,10 @@
-﻿namespace BotCombat.Abstractions.Models
+﻿namespace BotCombat.Core
 {
-    public class DamageLog
+    public class Log
     {
-        public DamageLog(int x, int y, int sourceId, int targetId, int damage)
+        public Log(int step, int x, int y, int sourceId, int targetId, int damage)
         {
+            Step = step;
             X = x;
             Y = y;
             SourceId = sourceId;
@@ -11,6 +12,7 @@
             Damage = damage;
         }
 
+        public int Step { get; }
         public int X { get; }
         public int Y { get; }
         public int SourceId { get; }

@@ -9,15 +9,9 @@
 {
     const int Scale = 32;
 
-    static string GetWalls(Step step)
-    {
-        return string.Join(",",
-            step.Walls.Select(o => $"{{x:{o.X * Scale},y:{o.Y * Scale}}}"));
-    }
-
     static string GetSteps(IEnumerable<Step> steps)
     {
-        return string.Join(",", steps.Select(s => $"{{map:map,walls:walls,bonuses:[{GetBonuses(s)}],bots:[{GetBots(s)}],logs:[{GetLogs(s)}]}}"));
+        return string.Join(",", steps.Select(s => $"{{map:map,bonuses:[{GetBonuses(s)}],bots:[{GetBots(s)}],logs:[{GetLogs(s)}]}}"));
     }
 
     static string GetBonuses(Step step)
@@ -34,8 +28,14 @@
 
     static string GetLogs(Step step)
     {
-        return string.Join(",",
-            step.DamageLogs.Select(o => $"\"Bot #{o.SourceId} damaged bot #{o.TargetId} for amount {o.Damage} at ({o.X}, {o.Y})\""));
+        return string.Join(",", step.Logs.Select(GetLog));
+    }
+
+    static string GetLog(BotCombat.Abstractions.Models.Log log)
+    {
+        return log.SourceId==0
+                ? $"\"Bot #{log.TargetId} got {log.Damage} power at ({log.X}, {log.Y})\""
+                : $"\"Bot #{log.SourceId} damaged bot #{log.TargetId} for {log.Damage} at ({log.X}, {log.Y})\"";
     }
 }
 
@@ -47,19 +47,16 @@
     <script>
 
         var map = { width: @width, height: @height, scale: @Scale };
-        var walls = [@Html.Raw(GetWalls(steps[0]))];
         var steps = [@Html.Raw(GetSteps(steps))];
 
         var stepNumber = 0;
 
         var bg = new Image();
-        var wall = new Image();
         var bonus = new Image();
         var bots = [new Image(), new Image(), new Image(), new Image()];
 
         function init() {
             bg.src = 'img/bg.png';
-            wall.src = 'img/wall.png';
             bonus.src = 'img/bonus.png';
             bots[0].src = 'img/bot1.png';
             bots[1].src = 'img/bot2.png';
@@ -91,11 +88,6 @@
             for (let i = 0; i < step.bonuses.length; i++) {
                 const b = step.bonuses[i];
                 ctx.drawImage(bonus, b.x, b.y, step.map.scale, step.map.scale);
-            }
-
-            for (let i = 0; i < step.walls.length; i++) {
-                const w = step.walls[i];
-                ctx.drawImage(wall, w.x, w.y, step.map.scale, step.map.scale);
             }
 
             ctx.drawImage(bg, 0, 0, step.map.width, step.map.height);

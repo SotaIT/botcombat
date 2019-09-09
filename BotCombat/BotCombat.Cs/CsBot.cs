@@ -44,9 +44,12 @@ namespace BotCombat.Cs
         private IBot CreateBot(string sourceCode)
         {
             var fileName = $"BotCombat.Cs.Bot{Id}.dll";
+            var filePath = $"Bots{Path.DirectorySeparatorChar}{fileName}";
 
-            if (!File.Exists(fileName))
+            if (!File.Exists(filePath))
             {
+                Directory.CreateDirectory("Bots");
+
                 var coreDir = Directory.GetParent(typeof(object).GetTypeInfo().Assembly.Location);
 
                 var coreLibs = new[]
@@ -60,18 +63,18 @@ namespace BotCombat.Cs
                 };
 
                 var locations = coreLibs.Select(cl => $"{coreDir.FullName}{Path.DirectorySeparatorChar}{cl}").ToList();
-                locations.Add(typeof(IBot).GetTypeInfo().Assembly.Location);
+                locations.Add(typeof(BaseBot).GetTypeInfo().Assembly.Location);
 
                 var compilation = CSharpCompilation.Create(fileName)
                     .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                     .AddReferences(locations.Select(l => MetadataReference.CreateFromFile(l)))
                     .AddSyntaxTrees(CSharpSyntaxTree.ParseText(sourceCode));
-                var emitResult = compilation.Emit(fileName);
+                var emitResult = compilation.Emit(filePath);
                 if (!emitResult.Success)
                     throw new Exception("Compile error: " + GetErrorMessage(emitResult));
             }
 
-            var @class = Assembly.LoadFrom(fileName).GetTypes().FirstOrDefault(t => typeof(IBot).IsAssignableFrom(t));
+            var @class = Assembly.LoadFrom(filePath).GetTypes().FirstOrDefault(t => typeof(BaseBot).IsAssignableFrom(t));
             if (@class == null)
                 throw new Exception("Bot class not found!");
 

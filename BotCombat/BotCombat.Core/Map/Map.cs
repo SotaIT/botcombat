@@ -11,7 +11,7 @@ namespace BotCombat.Core
 
         private readonly List<BotContainer> _bots = new List<BotContainer>();
 
-        private readonly List<DamageLog> _damageLogs = new List<DamageLog>();
+        private readonly List<Log> _logs = new List<Log>();
 
         private readonly Dictionary<int, int> _damageTaken = new Dictionary<int, int>();
 
@@ -51,7 +51,8 @@ namespace BotCombat.Core
                 _walls.ToMapObjectModels(),
                 _bonuses.ToMapObjectModels(),
                 _bots.ToMapBotModels(),
-                _damageLogs.Where(l => l.Step == _steps.Count).ToDamageLogModels()
+                _logs.Where(l => l.Step == _steps.Count).ToLogModels(),
+                _deadBots.Select(b => b.Id).ToList()
             ));
         }
 
@@ -119,8 +120,8 @@ namespace BotCombat.Core
         }
 
         /// <summary>
-        ///     All bots in the current point get bonus power
-        ///     The bonus is removed from the point
+        /// All bots in the current point get bonus power
+        /// The bonus is removed from the point
         /// </summary>
         private void AddBonuses(Bonus bonus, List<BotContainer> bots)
         {
@@ -128,7 +129,10 @@ namespace BotCombat.Core
 
             // add bonus to each bot
             foreach (var bot in bots)
+            {
                 bot.AddBonus(bonus.Power, CurrentStep);
+                _logs.Add(new Log(_steps.Count, bonus.X, bonus.Y, 0, bot.Id, bonus.Power));
+            }
 
             // remove bonus from the map
             RemoveFromPoint(bonus);
@@ -136,7 +140,7 @@ namespace BotCombat.Core
         }
 
         /// <summary>
-        ///     Damage intersecting bots: each bot damages to all other bots
+        /// Damage intersecting bots: each bot damages to all other bots
         /// </summary>
         private void DamageIntersectingBots(List<BotContainer> bots)
         {
@@ -151,7 +155,7 @@ namespace BotCombat.Core
         {
             var damage = source.Strength * _mapSettings.StrengthWeight;
             _damageTaken[target.Id] += damage;
-            _damageLogs.Add(new DamageLog(_steps.Count, source.X, source.Y, source.Id, target.Id, damage));
+            _logs.Add(new Log(_steps.Count, source.X, source.Y, source.Id, target.Id, damage));
         }
 
         #region MapPoints
