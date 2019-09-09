@@ -1,7 +1,6 @@
-﻿using BotCombat.Abstractions;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.Linq;
+using BotCombat.Abstractions;
 
 namespace BotCombat.Core
 {
@@ -31,37 +30,37 @@ namespace BotCombat.Core
         }
 
 
-        public static IList<BotCombat.Abstractions.Models.Object> ToMapObjectModels(this IEnumerable<IMapObject> mapObjects)
+        public static IList<Abstractions.Models.Object> ToMapObjectModels(this IEnumerable<IMapObject> mapObjects)
         {
             return mapObjects.Select(ToMapObjectModel)
                 .ToList();
         }
 
-        public static BotCombat.Abstractions.Models.Object ToMapObjectModel(this IMapObject mapObject)
+        public static Abstractions.Models.Object ToMapObjectModel(this IMapObject mapObject)
         {
-            return new BotCombat.Abstractions.Models.Object(mapObject.X, mapObject.Y);
+            return new Abstractions.Models.Object(mapObject.X, mapObject.Y);
         }
 
-        public static IDictionary<int, BotCombat.Abstractions.Models.Bot> ToMapBotModels(this IEnumerable<BotContainer> botContainers)
+        public static IDictionary<int, Abstractions.Models.Bot> ToMapBotModels(this IEnumerable<BotContainer> botContainers)
         {
             return botContainers
                 .Select(ToMapBotModel)
                 .ToDictionary(b => b.Id, b => b);
         }
 
-        public static BotCombat.Abstractions.Models.Bot ToMapBotModel(this BotContainer botContainer)
+        public static Abstractions.Models.Bot ToMapBotModel(this BotContainer botContainer)
         {
-            return new BotCombat.Abstractions.Models.Bot(botContainer.Id,
+            return new Abstractions.Models.Bot(botContainer.Id,
                 botContainer.X,
                 botContainer.Y,
                 botContainer.Stamina,
                 botContainer.Strength);
         }
 
-        public static IList<BotCombat.Abstractions.Models.DamageLog> ToDamageLogModels(this IEnumerable<DamageLog> damageLogs)
+        public static IList<Abstractions.Models.DamageLog> ToDamageLogModels(this IEnumerable<DamageLog> damageLogs)
         {
             return damageLogs
-                .Select(dl => new BotCombat.Abstractions.Models.DamageLog(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Damage))
+                .Select(dl => new Abstractions.Models.DamageLog(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Damage))
                 .ToList();
         }
     }

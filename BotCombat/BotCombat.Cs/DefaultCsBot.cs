@@ -6,7 +6,7 @@ namespace BotCombat.Cs
 {
     public class DefaultCsBot : BaseBot
     {
-        public DefaultCsBot(int id, MapImage botImage) : base(id,botImage)
+        public DefaultCsBot(int id, MapImage botImage) : base(id, botImage)
         {
         }
 

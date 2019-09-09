@@ -1,33 +1,36 @@
-﻿using BotCombat.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BotCombat.Abstractions;
 
 namespace BotCombat.Core
 {
     public class BotContainer : MapObject
     {
-        public int Id { get => _bot.Id; }
-
-        /// <summary>
-        /// Increases the number of hitpoints
-        /// </summary>
-        public int Stamina
-        {
-            get => PowerValues[PowerStats.Stamina];
-        }
-
-        /// <summary>
-        /// Increases the number of damage done
-        /// </summary>
-        public int Strength
-        {
-            get => PowerValues[PowerStats.Strength];
-        }
+        private readonly IBot _bot;
 
         private int _power;
 
         private Dictionary<PowerStats, int> _powerValues;
+
+        public BotContainer(IBot bot, int x, int y, int power, Step step) : base(x, y, bot.BotImage)
+        {
+            _bot = bot;
+            _power = power;
+            PowerValues = _bot.InitPower(_power, step);
+        }
+
+        public int Id => _bot.Id;
+
+        /// <summary>
+        /// Increases the health
+        /// </summary>
+        public int Stamina => PowerValues[PowerStats.Stamina];
+
+        /// <summary>
+        /// Increases the number of damage done
+        /// </summary>
+        public int Strength => PowerValues[PowerStats.Strength];
 
         private Dictionary<PowerStats, int> PowerValues
         {
@@ -37,16 +40,6 @@ namespace BotCombat.Core
                 _powerValues = value;
                 CheckPowerDistribution();
             }
-        }
-
-        private readonly IBot _bot;
-
-
-        public BotContainer(IBot bot, int x, int y, int power, Step step) : base(x, y, bot.BotImage)
-        {
-            _bot = bot;
-            _power = power;
-            PowerValues = _bot.InitPower(_power, step);
         }
 
         private void CheckPowerDistribution()

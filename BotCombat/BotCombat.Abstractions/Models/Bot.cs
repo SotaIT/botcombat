@@ -2,17 +2,17 @@
 {
     public class Bot : Object
     {
-        public Bot(int id, int x, int y, int health, int damage) : base(x, y)
+        public Bot(int id, int x, int y, int stamina, int strength) : base(x, y)
         {
             Id = id;
-            Health = health;
-            Damage = damage;
+            Stamina = stamina;
+            Strength = strength;
         }
 
         public int Id { get; }
 
-        public int Health { get; }
+        public int Stamina { get; }
 
-        public int Damage { get; }
+        public int Strength { get; }
     }
 }

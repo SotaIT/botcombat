@@ -20,7 +20,8 @@ namespace BotCombat.Core
         public void Move(MoveDirection direction)
         {
             var point = MapUtils.GetDestination(X, Y, direction);
-            X = point.X; Y = point.Y;
+            X = point.X;
+            Y = point.Y;
         }
     }
 }

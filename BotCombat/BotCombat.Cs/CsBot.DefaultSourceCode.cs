@@ -2,9 +2,8 @@
 {
     public partial class CsBot
     {
-        public static string DefaultSourceCode 
-        {
-            get => @"
+        public static string DefaultSourceCode =>
+            @"
 using System;
 using System.Collections.Generic;
 using BotCombat.Abstractions;
@@ -37,9 +36,6 @@ using BotCombat.Abstractions;
             return DistributePower(power, step);
         }
     }
-
-
 ";
-        }
     }
 }

@@ -9,7 +9,7 @@ namespace BotCombat.TestApp
 {
     class Program
     {
-        static Map map;
+        static Map _map;
         static void Main(string[] args)
         {
             var walls = new List<Wall>() { new Wall(3, 3, null) };
@@ -17,15 +17,15 @@ namespace BotCombat.TestApp
             var bots = new List<IBot> { 
                 new TestBot(), 
                 new TestBot2(), 
-                new Js.JsBot(3, 10000, null, Js.JsBot.DefaultInitPowerScript, Js.JsBot.DefaultDistributePowerScript, Js.JsBot.DefaultChooseDirectionScript),
-                new Cs.CsBot(4, 10000, null, Cs.CsBot.DefaultSourceCode)};
+                new Js.JsBot(3, 100000, null, Js.JsBot.DefaultInitPowerScript, Js.JsBot.DefaultDistributePowerScript, Js.JsBot.DefaultChooseDirectionScript),
+                new Cs.CsBot(4, 100000, null, Cs.CsBot.DefaultSourceCode)};
             var mapSettings = new MapSettings(1, 5, 5, 32, 10, 1, 1, walls, bonuses);
 
-            map = new Map(mapSettings, bots);
+            _map = new Map(mapSettings, bots);
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var step = map.Step();
+                var step = _map.Step();
                 DrawStep(step);
 
                 if (step.Bots.Count < 2)
@@ -39,7 +39,7 @@ namespace BotCombat.TestApp
                     break;
                 }
 
-                Thread.Sleep(10);
+                Thread.Sleep(100);
             }
 
             Console.WriteLine("Time Over.");
