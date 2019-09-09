@@ -4,13 +4,10 @@ namespace BotCombat.Abstractions
 {
     public abstract class BaseBot : IBot
     {
-        protected BaseBot(int id, MapImage botImage)
+        protected BaseBot(int id)
         {
             Id = id;
-            BotImage = botImage;
         }
-
-        public virtual MapImage BotImage { get; }
 
         public virtual int Id { get; }
 

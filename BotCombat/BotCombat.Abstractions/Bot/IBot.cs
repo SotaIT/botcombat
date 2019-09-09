@@ -5,11 +5,6 @@ namespace BotCombat.Abstractions
     public interface IBot
     {
         /// <summary>
-        /// Bot image
-        /// </summary>
-        MapImage BotImage { get; }
-
-        /// <summary>
         /// Bot Id
         /// </summary>
         int Id { get; }

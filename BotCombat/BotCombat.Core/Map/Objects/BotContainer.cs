@@ -13,7 +13,7 @@ namespace BotCombat.Core
 
         private Dictionary<PowerStats, int> _powerValues;
 
-        public BotContainer(IBot bot, int x, int y, int power, Step step) : base(x, y, bot.BotImage)
+        public BotContainer(IBot bot, int x, int y, int power, Step step) : base(x, y)
         {
             _bot = bot;
             _power = power;

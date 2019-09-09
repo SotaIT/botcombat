@@ -1,29 +1,35 @@
-﻿using BotCombat.Abstractions;
-using BotCombat.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using BotCombat.Abstractions;
+using BotCombat.Core;
+using BotCombat.Cs;
+using BotCombat.Js;
 
 namespace BotCombat.TestApp
 {
-    class Program
+    internal class Program
     {
-        static Map _map;
-        static void Main(string[] args)
+        private static Map _map;
+
+        private static void Main(string[] args)
         {
-            var walls = new List<Wall>() { new Wall(3, 3, null) };
-            var bonuses = new List<Bonus>() { new Bonus(0, 0, 5, null), new Bonus(2, 1, 3, null), new Bonus(3, 4, 15, null) };
-            var bots = new List<IBot> { 
-                new TestBot(), 
-                new TestBot2(), 
-                new Js.JsBot(3, 100000, null, Js.JsBot.DefaultInitPowerScript, Js.JsBot.DefaultDistributePowerScript, Js.JsBot.DefaultChooseDirectionScript),
-                new Cs.CsBot(4, 100000, null, Cs.CsBot.DefaultSourceCode)};
+            var walls = new List<Wall> { new Wall(3, 3) };
+            var bonuses = new List<Bonus> { new Bonus(0, 0, 5), new Bonus(2, 1, 3), new Bonus(3, 4, 15) };
+            var bots = new List<IBot>
+            {
+                new TestBot(),
+                new TestBot2(),
+                new JsBot(3, 100000, JsBot.DefaultInitPowerScript, JsBot.DefaultDistributePowerScript,
+                    JsBot.DefaultChooseDirectionScript),
+                new CsBot(4, 100000, CsBot.DefaultSourceCode)
+            };
             var mapSettings = new MapSettings(1, 5, 5, 32, 10, 1, 1, walls, bonuses);
 
             _map = new Map(mapSettings, bots);
 
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
                 var step = _map.Step();
                 DrawStep(step);
@@ -64,12 +70,13 @@ namespace BotCombat.TestApp
                     DrawPoint(step, x, y);
                     Console.Write(" | ");
                 }
+
                 HLine(step);
             }
 
             foreach (var dl in step.DamageLogs)
-                Console.WriteLine($"Bot {dl.SourceId} made {dl.Damage} damage to bot {dl.TargetId} at ({dl.X}, {dl.Y}).");
-
+                Console.WriteLine(
+                    $"Bot {dl.SourceId} made {dl.Damage} damage to bot {dl.TargetId} at ({dl.X}, {dl.Y}).");
         }
 
         private static void HLine(Step step)
@@ -104,16 +111,16 @@ namespace BotCombat.TestApp
                 {
                     var str = string.Join(",", bots.Select(b => b.Id));
                     while (str.Length < 7)
-                    {
                         if (str.Length % 2 == 0)
                             str = " " + str;
                         else
                             str += " ";
-                    }
                     Console.Write(str);
                 }
                 else
+                {
                     Console.Write(GetSingleCharCell(bots[0].Id.ToString()[0]));
+                }
 
                 return;
             }

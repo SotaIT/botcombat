@@ -6,7 +6,7 @@ namespace BotCombat.TestApp
 {
     public class TestBot : DefaultCsBot
     {
-        public TestBot() : base(1, null)
+        public TestBot() : base(1)
         {
         }
     }

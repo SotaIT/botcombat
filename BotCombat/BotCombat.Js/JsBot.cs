@@ -16,15 +16,12 @@ namespace BotCombat.Js
 
         private readonly Engine _engine;
 
-        public JsBot(int id, int timeOut, MapImage botImage, string initPowerScript, string distributePowerScript,
+        public JsBot(int id, int timeOut, string initPowerScript, string distributePowerScript,
             string chooseDirectionScript)
         {
             Id = id;
             TimeOut = timeOut;
-            BotImage = botImage;
-
             _engine = new Engine();
-            
 
             _engine.Execute(
                 $"function initPower(power, step, result) {{ {initPowerScript} }}" +
@@ -34,8 +31,6 @@ namespace BotCombat.Js
         }
 
         public int TimeOut { get; }
-
-        public MapImage BotImage { get; }
 
         public int Id { get; }
 

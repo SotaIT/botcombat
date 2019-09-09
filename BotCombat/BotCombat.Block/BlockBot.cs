@@ -6,8 +6,6 @@ namespace BotCombat.Block
 {
     public class BlockBot : IBot
     {
-        public MapImage BotImage => throw new NotImplementedException();
-
         public int Id => throw new NotImplementedException();
 
         public MoveDirection ChooseDirection(Step step)

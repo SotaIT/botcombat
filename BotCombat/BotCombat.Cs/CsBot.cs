@@ -12,11 +12,10 @@ namespace BotCombat.Cs
 {
     public sealed partial class CsBot : IBot
     {
-        public CsBot(int id, int timeOut, MapImage botImage, string sourceCode)
+        public CsBot(int id, int timeOut, string sourceCode)
         {
             Id = id;
             TimeOut = timeOut;
-            BotImage = botImage;
 
             Bot = CreateBot(sourceCode);
         }
@@ -24,8 +23,6 @@ namespace BotCombat.Cs
         private IBot Bot { get; }
 
         public int TimeOut { get; }
-
-        public MapImage BotImage { get; }
 
         public int Id { get; }
 
@@ -75,7 +72,7 @@ namespace BotCombat.Cs
             if(@class == null)
                 throw new Exception("Bot class not found!");
 
-            return Activator.CreateInstance(@class, Id, BotImage) as IBot;
+            return Activator.CreateInstance(@class, Id) as IBot;
         }
 
         private static string GetErrorMessage(EmitResult emitResult)
