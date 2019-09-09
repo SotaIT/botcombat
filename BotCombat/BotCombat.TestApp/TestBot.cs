@@ -1,19 +1,13 @@
-﻿using BotCombat.Core;
-using System;
+﻿using BotCombat.Abstractions;
+using BotCombat.Cs;
 using System.Collections.Generic;
 
 namespace BotCombat.TestApp
 {
-    public class TestBot : BaseBot
+    public class TestBot : DefaultCsBot
     {
-        static Random random = new Random();
-        public override MapImage BotImage => new MapImage();
-
-        public override int Id => 1;
-
-        public override MoveDirection ChooseDirection(Step step)
+        public TestBot() : base(1, null)
         {
-            return (MoveDirection)(random.Next(4) + 1);
         }
     }
 

@@ -1,4 +1,6 @@
-﻿namespace BotCombat.Core
+﻿using BotCombat.Abstractions;
+
+namespace BotCombat.Core
 {
     public abstract class MapObject : IMapObject
     {

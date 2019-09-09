@@ -1,4 +1,5 @@
-﻿using BotCombat.Core;
+﻿using BotCombat.Abstractions;
+using BotCombat.Core;
 using Jint;
 using System;
 using System.Collections.Generic;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BotCombat.Core
+namespace BotCombat.Abstractions
 {
     public interface IBot
     {

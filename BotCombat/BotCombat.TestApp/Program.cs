@@ -1,4 +1,5 @@
-﻿using BotCombat.Core;
+﻿using BotCombat.Abstractions;
+using BotCombat.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,11 @@ namespace BotCombat.TestApp
         {
             var walls = new List<Wall>() { new Wall(3, 3, null) };
             var bonuses = new List<Bonus>() { new Bonus(0, 0, 5, null), new Bonus(2, 1, 3, null), new Bonus(3, 4, 15, null) };
-            var bots = new List<IBot> { new TestBot(), new TestBot2(), new Js.JsBot(9, 10000, null, Js.JsBot.DefaultInitPowerScript, Js.JsBot.DefaultDistributePowerScript, Js.JsBot.DefaultChooseDirectionScript) };
+            var bots = new List<IBot> { 
+                new TestBot(), 
+                new TestBot2(), 
+                new Js.JsBot(3, 10000, null, Js.JsBot.DefaultInitPowerScript, Js.JsBot.DefaultDistributePowerScript, Js.JsBot.DefaultChooseDirectionScript),
+                new Cs.CsBot(4, 10000, null, Cs.CsBot.DefaultSourceCode)};
             var mapSettings = new MapSettings(1, 5, 5, 32, 10, 1, 1, walls, bonuses);
 
             map = new Map(mapSettings, bots);

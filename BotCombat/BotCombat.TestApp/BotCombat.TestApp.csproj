@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BotCombat.Block\BotCombat.Block.csproj" />
     <ProjectReference Include="..\BotCombat.Core\BotCombat.Core.csproj" />
+    <ProjectReference Include="..\BotCombat.Cs\BotCombat.Cs.csproj" />
     <ProjectReference Include="..\BotCombat.Js\BotCombat.Js.csproj" />
   </ItemGroup>
 

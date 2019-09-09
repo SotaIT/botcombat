@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BotCombat.Abstractions;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -30,43 +31,38 @@ namespace BotCombat.Core
         }
 
 
-        public static Models.Map ToMapModel(this MapSettings mapSettings)
+        public static IList<BotCombat.Abstractions.Models.Object> ToMapObjectModels(this IEnumerable<IMapObject> mapObjects)
         {
-            return new Models.Map(mapSettings.Id, mapSettings.Width, mapSettings.Height);
+            return mapObjects.Select(ToMapObjectModel)
+                .ToList();
         }
 
-        public static IReadOnlyList<Models.Object> ToMapObjectModels(this IEnumerable<IMapObject> mapObjects)
+        public static BotCombat.Abstractions.Models.Object ToMapObjectModel(this IMapObject mapObject)
         {
-            return new ReadOnlyCollection<Models.Object>(
-                mapObjects.Select(ToMapObjectModel)
-                .ToList());
+            return new BotCombat.Abstractions.Models.Object(mapObject.X, mapObject.Y);
         }
 
-        public static Models.Object ToMapObjectModel(this IMapObject mapObject)
+        public static IDictionary<int, BotCombat.Abstractions.Models.Bot> ToMapBotModels(this IEnumerable<BotContainer> botContainers)
         {
-            return new Models.Object(mapObject.X, mapObject.Y);
-        }
-
-        public static IReadOnlyDictionary<int, Models.Bot> ToMapBotModels(this IEnumerable<BotContainer> botContainers)
-        {
-            return new ReadOnlyDictionary<int, Models.Bot>(
-                botContainers
+            return botContainers
                 .Select(ToMapBotModel)
-                .ToDictionary(b => b.Id, b => b));
+                .ToDictionary(b => b.Id, b => b);
         }
 
-        public static Models.Bot ToMapBotModel(this BotContainer botContainer)
+        public static BotCombat.Abstractions.Models.Bot ToMapBotModel(this BotContainer botContainer)
         {
-            return new Models.Bot(botContainer.Id,
+            return new BotCombat.Abstractions.Models.Bot(botContainer.Id,
                 botContainer.X,
                 botContainer.Y,
                 botContainer.Stamina,
                 botContainer.Strength);
         }
 
-        public static IReadOnlyList<DamageLog> ToDamageLogModels(this IEnumerable<DamageLog> damageLogs)
+        public static IList<BotCombat.Abstractions.Models.DamageLog> ToDamageLogModels(this IEnumerable<DamageLog> damageLogs)
         {
-            return new ReadOnlyCollection<DamageLog>(damageLogs.ToList());
+            return damageLogs
+                .Select(dl => new BotCombat.Abstractions.Models.DamageLog(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Damage))
+                .ToList();
         }
     }
 }

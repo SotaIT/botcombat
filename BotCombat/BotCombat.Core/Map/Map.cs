@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BotCombat.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -136,11 +137,13 @@ namespace BotCombat.Core
         {
             _steps.Add(new Step(
                 _steps.Count,
-                _mapSettings,
-                _walls,
-                _bonuses,
-                _bots,
-                _damageLogs.Where(l => l.Step == _steps.Count)
+                _mapSettings.Id,
+                _mapSettings.Width,
+                _mapSettings.Height,
+                _walls.ToMapObjectModels(),
+                _bonuses.ToMapObjectModels(),
+                _bots.ToMapBotModels(),
+                _damageLogs.Where(l => l.Step == _steps.Count).ToDamageLogModels()
                 ));
         }
 

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BotCombat.Abstractions\BotCombat.Abstractions.csproj" />
+    <ProjectReference Include="..\BotCombat.Core\BotCombat.Core.csproj" />
   </ItemGroup>
 
 </Project>

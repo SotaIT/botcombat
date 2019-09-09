@@ -1,4 +1,4 @@
-﻿namespace BotCombat.Core
+﻿namespace BotCombat.Abstractions
 {
     public enum PowerStats
     {
