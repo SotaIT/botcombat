@@ -28,6 +28,7 @@ namespace BotCombat.Abstractions
         }
 
         public int Number { get; }
+
         public Map Map { get; }
 
         public IReadOnlyList<Object> Walls { get; }

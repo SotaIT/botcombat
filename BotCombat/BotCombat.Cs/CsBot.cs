@@ -45,31 +45,34 @@ namespace BotCombat.Cs
         {
             var fileName = $"BotCombat.Cs.Bot{Id}.dll";
 
-            var coreDir = Directory.GetParent(typeof(object).GetTypeInfo().Assembly.Location);
-
-            var coreLibs = new[]
+            if (!File.Exists(fileName))
             {
-                "mscorlib.dll",
-                "netstandard.dll",
-                "System.Runtime.dll",
-                "System.Private.CoreLib.dll",
-                "System.Linq.dll",
-                "System.Collections.dll"
-            };
+                var coreDir = Directory.GetParent(typeof(object).GetTypeInfo().Assembly.Location);
 
-            var locations = coreLibs.Select(cl => $"{coreDir.FullName}{Path.DirectorySeparatorChar}{cl}").ToList();
-            locations.Add(typeof(IBot).GetTypeInfo().Assembly.Location);
+                var coreLibs = new[]
+                {
+                    "mscorlib.dll",
+                    "netstandard.dll",
+                    "System.Runtime.dll",
+                    "System.Private.CoreLib.dll",
+                    "System.Linq.dll",
+                    "System.Collections.dll"
+                };
 
-            var compilation = CSharpCompilation.Create(fileName)
-                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                .AddReferences(locations.Select(l => MetadataReference.CreateFromFile(l)))
-                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(sourceCode));
-            var emitResult = compilation.Emit(fileName);
-            if (!emitResult.Success)
-                throw new Exception("Compile error: " + GetErrorMessage(emitResult));
+                var locations = coreLibs.Select(cl => $"{coreDir.FullName}{Path.DirectorySeparatorChar}{cl}").ToList();
+                locations.Add(typeof(IBot).GetTypeInfo().Assembly.Location);
+
+                var compilation = CSharpCompilation.Create(fileName)
+                    .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+                    .AddReferences(locations.Select(l => MetadataReference.CreateFromFile(l)))
+                    .AddSyntaxTrees(CSharpSyntaxTree.ParseText(sourceCode));
+                var emitResult = compilation.Emit(fileName);
+                if (!emitResult.Success)
+                    throw new Exception("Compile error: " + GetErrorMessage(emitResult));
+            }
 
             var @class = Assembly.LoadFrom(fileName).GetTypes().FirstOrDefault(t => typeof(IBot).IsAssignableFrom(t));
-            if(@class == null)
+            if (@class == null)
                 throw new Exception("Bot class not found!");
 
             return Activator.CreateInstance(@class, Id) as IBot;

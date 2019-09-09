@@ -1,0 +1,130 @@
+﻿@using BotCombat.Abstractions
+@using BotCombat.Core
+@{
+    ViewData["Title"] = "Home Page";
+    var mapSettings = ViewData["MapSettings"] as MapSettings;
+    var steps = ViewData["Steps"] as List<Step>;
+}
+@functions
+{
+    const int Scale = 32;
+
+    static string GetWalls(Step step)
+    {
+        return string.Join(",",
+            step.Walls.Select(o => $"{{x:{o.X * Scale},y:{o.Y * Scale}}}"));
+    }
+
+    static string GetSteps(IEnumerable<Step> steps)
+    {
+        return string.Join(",", steps.Select(s => $"{{map:map,walls:walls,bonuses:[{GetBonuses(s)}],bots:[{GetBots(s)}],logs:[{GetLogs(s)}]}}"));
+    }
+
+    static string GetBonuses(Step step)
+    {
+        return string.Join(",",
+            step.Bonuses.Select(o => $"{{x:{o.X * Scale},y:{o.Y * Scale}}}"));
+    }
+
+    static string GetBots(Step step)
+    {
+        return string.Join(",",
+            step.Bots.Values.Select(o => $"{{x:{o.X * Scale},y:{o.Y * Scale},id:{o.Id}}}"));
+    }
+
+    static string GetLogs(Step step)
+    {
+        return string.Join(",",
+            step.DamageLogs.Select(o => $"\"Bot #{o.SourceId} damaged bot #{o.TargetId} for amount {o.Damage} at ({o.X}, {o.Y})\""));
+    }
+}
+
+@if (steps != null && mapSettings != null)
+{
+    var width = mapSettings.Width * Scale;
+    var height = mapSettings.Height * Scale;
+
+    <script>
+
+        var map = { width: @width, height: @height, scale: @Scale };
+        var walls = [@Html.Raw(GetWalls(steps[0]))];
+        var steps = [@Html.Raw(GetSteps(steps))];
+
+        var stepNumber = 0;
+
+        var bg = new Image();
+        var wall = new Image();
+        var bonus = new Image();
+        var bots = [new Image(), new Image(), new Image(), new Image()];
+
+        function init() {
+            bg.src = 'img/bg.png';
+            wall.src = 'img/wall.png';
+            bonus.src = 'img/bonus.png';
+            bots[0].src = 'img/bot1.png';
+            bots[1].src = 'img/bot2.png';
+            bots[2].src = 'img/bot3.png';
+            bots[3].src = 'img/bot4.png';
+            window.requestAnimationFrame(draw);
+        }
+
+        function getBotImage(id) {
+            if (bots[id])
+                return bots[id];
+            return bots[0];
+        }
+
+        function draw() {
+
+            const step = steps[stepNumber];
+
+            const ctx = document.getElementById('canvas').getContext('2d');
+
+            ctx.globalCompositeOperation = 'destination-over';
+            ctx.clearRect(0, 0, step.map.width, step.map.height);
+
+            for (let i = 0; i < step.bots.length; i++) {
+                const bt = step.bots[i];
+                ctx.drawImage(getBotImage(bt.id), bt.x, bt.y, step.map.scale, step.map.scale);
+            }
+
+            for (let i = 0; i < step.bonuses.length; i++) {
+                const b = step.bonuses[i];
+                ctx.drawImage(bonus, b.x, b.y, step.map.scale, step.map.scale);
+            }
+
+            for (let i = 0; i < step.walls.length; i++) {
+                const w = step.walls[i];
+                ctx.drawImage(wall, w.x, w.y, step.map.scale, step.map.scale);
+            }
+
+            ctx.drawImage(bg, 0, 0, step.map.width, step.map.height);
+
+            for (let i = 0; i < step.logs.length; i++) {
+                log(step.logs[i]);
+            }
+
+            stepNumber++;
+            if (stepNumber >= steps.length) {
+                log('Game Over!');
+                return;
+            }
+
+            setTimeout('window.requestAnimationFrame(draw);', 100);
+        }
+
+        function log(s) {
+            var record = document.createElement('div');
+            record.innerHTML = s;
+            document.getElementById('log').appendChild(record);
+        }
+
+        init();
+
+    </script>
+
+    <div class="text-center">
+        <canvas id="canvas" width="@(width)" height="@(height)"></canvas>
+        <div id="log"></div>
+    </div>
+}

@@ -11,7 +11,7 @@ using BotCombat.Abstractions;
 
     public class ExampleCsBot : BaseBot
     {
-        public ExampleCsBot(int id, MapImage botImage) : base(id,botImage)
+        public ExampleCsBot(int id) : base(id)
         {
         }
 
