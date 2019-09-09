@@ -25,9 +25,9 @@ namespace BotCombat.Js
             _engine = new Engine();
 
             _engine.Execute(
-                $"function initPower(power, step, result) {{ {initPowerScript} }}" +
-                $"function distributePower(power, step, result) {{ {distributePowerScript} }}" +
-                $"function chooseDirection(step, result) {{ {MoveDirectionToJs()} {chooseDirectionScript} }}"
+                $"function initPower(power, game, result) {{ {initPowerScript} }}" +
+                $"function distributePower(power, game, result) {{ {distributePowerScript} }}" +
+                $"function chooseDirection(game, result) {{ {MoveDirectionToJs()} {chooseDirectionScript} }}"
             );
         }
 
@@ -35,21 +35,21 @@ namespace BotCombat.Js
 
         public int Id { get; }
 
-        public MoveDirection ChooseDirection(Step step)
+        public MoveDirection ChooseDirection(Game game)
         {
             var result = new DirectionResult();
-            _engine.Invoke("chooseDirection", step, result);
+            _engine.Invoke("chooseDirection", game, result);
             return result.Direction;
         }
 
-        public Dictionary<PowerStats, int> DistributePower(int power, Step step)
+        public Dictionary<PowerStats, int> DistributePower(int power, Game game)
         {
-            return DistributePowerJs("distributePower", power, step);
+            return DistributePowerJs("distributePower", power, game);
         }
 
-        public Dictionary<PowerStats, int> InitPower(int power, Step step)
+        public Dictionary<PowerStats, int> InitPower(int power, Game game)
         {
-            return DistributePowerJs("initPower", power, step);
+            return DistributePowerJs("initPower", power, game);
         }
 
         private static string MoveDirectionToJs()
@@ -58,10 +58,10 @@ namespace BotCombat.Js
             return $"let MoveDirection = {{{string.Join(", ", members)}}};";
         }
 
-        private Dictionary<PowerStats, int> DistributePowerJs(string funcName, int power, Step step)
+        private Dictionary<PowerStats, int> DistributePowerJs(string funcName, int power, Game game)
         {
             var result = new PowerResult();
-            _engine.Invoke(funcName, power, step, result);
+            _engine.Invoke(funcName, power, game, result);
             return new Dictionary<PowerStats, int>
             {
                 [PowerStats.Strength] = result.Strength,

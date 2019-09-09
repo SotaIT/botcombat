@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
-using BotCombat.Abstractions;
-using BotCombat.Abstractions.Models;
-using BotCombat.Web.Models;
+using Game = BotCombat.Abstractions.Models.Game;
 
 namespace BotCombat.Web.Services
 {
     public class GameService
     {
-        public IEnumerable<Step> Play(int mapId, List<int> bots)
+        public Game Play(int mapId, List<int> bots)
         {
             throw new System.NotImplementedException();
         }

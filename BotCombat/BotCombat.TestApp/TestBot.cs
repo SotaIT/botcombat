@@ -16,7 +16,7 @@ namespace BotCombat.TestApp
     {
         public override int Id => 2;
 
-        public override Dictionary<PowerStats, int> DistributePower(int power, Step step)
+        public override Dictionary<PowerStats, int> DistributePower(int power, Game game)
         {
             var strength = power / 3;
 

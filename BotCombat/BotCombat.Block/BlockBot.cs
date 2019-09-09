@@ -9,17 +9,17 @@ namespace BotCombat.Block
     {
         public int Id => throw new NotImplementedException();
 
-        public MoveDirection ChooseDirection(Step step)
+        public MoveDirection ChooseDirection(Game game)
         {
             throw new NotImplementedException();
         }
 
-        public Dictionary<PowerStats, int> DistributePower(int power, Step step)
+        public Dictionary<PowerStats, int> DistributePower(int power, Game game)
         {
             throw new NotImplementedException();
         }
 
-        public Dictionary<PowerStats, int> InitPower(int power, Step step)
+        public Dictionary<PowerStats, int> InitPower(int power, Game game)
         {
             throw new NotImplementedException();
         }

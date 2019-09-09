@@ -14,11 +14,11 @@ namespace BotCombat.Core
 
         private Dictionary<PowerStats, int> _powerValues;
 
-        public BotContainer(IBot bot, int x, int y, int power, Step step) : base(x, y)
+        public BotContainer(IBot bot, int x, int y, int power, Game game) : base(x, y)
         {
             _bot = bot;
             _power = power;
-            PowerValues = _bot.InitPower(_power, step);
+            PowerValues = _bot.InitPower(_power, game);
         }
 
         public int Id => _bot.Id;
@@ -49,15 +49,15 @@ namespace BotCombat.Core
                 throw new Exception("Incorrect power distribution!");
         }
 
-        public MoveDirection ChooseDirection(Step step)
+        public MoveDirection ChooseDirection(Game game)
         {
-            return _bot.ChooseDirection(step);
+            return _bot.ChooseDirection(game);
         }
 
-        public void AddBonus(int power, Step step)
+        public void AddBonus(int power, Game game)
         {
             _power += power;
-            PowerValues = _bot.DistributePower(_power, step);
+            PowerValues = _bot.DistributePower(_power, game);
         }
     }
 }

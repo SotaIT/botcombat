@@ -22,6 +22,10 @@ namespace BotCombat.Core
 
         private readonly Map _map;
 
+        private readonly Abstractions.Models.Map _mapModel;
+
+        private Game _game;
+
         private readonly List<Step> _steps = new List<Step>();
 
         private readonly List<Wall> _walls = new List<Wall>();
@@ -30,6 +34,7 @@ namespace BotCombat.Core
         {
             _map = map;
             _mapPoints = new List<IMapObject>[_map.Width, _map.Height];
+            _mapModel = new Abstractions.Models.Map(_map.Id, _map.Width, map.Height, _walls.ToMapObjectModels());
 
             InitMapPoints();
 
@@ -40,41 +45,35 @@ namespace BotCombat.Core
             AddBots(bots);
         }
 
-        public Step CurrentStep => _steps[_steps.Count - 1];
-
         private void CreateStep()
         {
             _steps.Add(new Step(
                 _steps.Count,
-                _map.Id,
-                _map.Width,
-                _map.Height,
-                _walls.ToMapObjectModels(),
                 _bonuses.ToMapObjectModels(),
                 _bots.ToMapBotModels(),
                 _logs.Where(l => l.Step == _steps.Count).ToLogModels(),
                 _deadBots.Select(b => b.Id).ToList()
             ));
+            _game = new Game(_mapModel, _steps);
         }
 
-        public Step Step()
+        public Game MakeStep()
         {
             MoveBots();
             ComputeCollisions();
             CreateStep();
-            return CurrentStep;
+            return _game;
         }
 
         private void MoveBots()
         {
-            var currentStep = CurrentStep;
             foreach (var bot in _bots)
-                MoveBot(bot, currentStep);
+                MoveBot(bot, _game);
         }
 
-        public BotContainer MoveBot(BotContainer bot, Step step)
+        public BotContainer MoveBot(BotContainer bot, Game game)
         {
-            var direction = bot.ChooseDirection(step);
+            var direction = bot.ChooseDirection(game);
             // bot doesn't want to move - stop
             if (direction == MoveDirection.None)
                 return bot;
@@ -131,7 +130,7 @@ namespace BotCombat.Core
             // add bonus to each bot
             foreach (var bot in bots)
             {
-                bot.AddBonus(bonus.Power, CurrentStep);
+                bot.AddBonus(bonus.Power, _game);
                 _logs.Add(new Log(_steps.Count, bonus.X, bonus.Y, 0, bot.Id, bonus.Power));
             }
 
@@ -232,7 +231,7 @@ namespace BotCombat.Core
                 var point = emptyPoints[pointIndex];
                 emptyPoints.RemoveAt(pointIndex);
 
-                var botContainer = new BotContainer(bot, point.X, point.Y, _map.InitialPower, CurrentStep);
+                var botContainer = new BotContainer(bot, point.X, point.Y, _map.InitialPower, _game);
                 _bots.Add(botContainer);
                 _mapPoints[point.X, point.Y].Add(botContainer);
                 _damageTaken[botContainer.Id] = 0;

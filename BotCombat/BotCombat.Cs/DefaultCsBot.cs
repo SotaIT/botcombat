@@ -11,12 +11,12 @@ namespace BotCombat.Cs
         {
         }
 
-        public override MoveDirection ChooseDirection(Step step)
+        public override MoveDirection ChooseDirection(Game game)
         {
             return (MoveDirection)(new Random().Next(4) + 1);
         }
 
-        public override Dictionary<PowerStats, int> DistributePower(int power, Step step)
+        public override Dictionary<PowerStats, int> DistributePower(int power, Game game)
         {
             var strength = power / 2;
 
@@ -27,9 +27,9 @@ namespace BotCombat.Cs
             };
         }
 
-        public override Dictionary<PowerStats, int> InitPower(int power, Step step)
+        public override Dictionary<PowerStats, int> InitPower(int power, Game game)
         {
-            return DistributePower(power, step);
+            return DistributePower(power, game);
         }
     }
 }

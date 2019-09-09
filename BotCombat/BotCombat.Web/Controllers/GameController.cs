@@ -13,7 +13,7 @@ namespace BotCombat.Web.Controllers
         private readonly GameService _gameService = new GameService();
 
         [HttpGet]
-        public IEnumerable<StepModel> Play(int mapId, List<int> bots)
+        public Game Play(int mapId, List<int> bots)
         {
             return _gameService.Play(mapId, bots).ToModel();
         }

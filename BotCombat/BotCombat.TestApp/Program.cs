@@ -33,8 +33,9 @@ namespace BotCombat.TestApp
 
             for (var i = 0; i < 100; i++)
             {
-                var step = _mapManager.Step();
-                DrawStep(step);
+                var game = _mapManager.MakeStep();
+                var step = game.LastStep;
+                DrawStep(game, step);
 
                 if (step.Bots.Count < 2)
                 {
@@ -54,26 +55,26 @@ namespace BotCombat.TestApp
         }
 
 
-        private static void DrawStep(Step step)
+        private static void DrawStep(Game game, Step step)
         {
             Console.WriteLine(" ");
             Console.WriteLine(" ");
-            Console.Write(new string('=', step.Map.Width * 10));
+            Console.Write(new string('=', game.Map.Width * 10));
             Console.WriteLine(" ");
             Console.WriteLine(" ");
 
-            HLine(step);
+            HLine(game);
 
-            for (var y = 0; y < step.Map.Height; y++)
+            for (var y = 0; y < game.Map.Height; y++)
             {
                 Console.Write(" | ");
-                for (var x = 0; x < step.Map.Width; x++)
+                for (var x = 0; x < game.Map.Width; x++)
                 {
-                    DrawPoint(step, x, y);
+                    DrawPoint(game, step, x, y);
                     Console.Write(" | ");
                 }
 
-                HLine(step);
+                HLine(game);
             }
 
             foreach (var dl in step.Logs)
@@ -81,18 +82,18 @@ namespace BotCombat.TestApp
                     $"Bot {dl.SourceId} made {dl.Value} damage to bot {dl.TargetId} at ({dl.X}, {dl.Y}).");
         }
 
-        private static void HLine(Step step)
+        private static void HLine(Game game)
         {
             Console.WriteLine(" ");
             Console.Write(" |");
-            Console.Write(new string('-', step.Map.Width * 10 - 1));
+            Console.Write(new string('-', game.Map.Width * 10 - 1));
             Console.Write("| ");
             Console.WriteLine(" ");
         }
 
-        private static void DrawPoint(Step step, int x, int y)
+        private static void DrawPoint(Game game, Step step, int x, int y)
         {
-            var wall = step.Walls.FirstOrDefault(w => w.X == x && w.Y == y);
+            var wall = game.Map.Walls.FirstOrDefault(w => w.X == x && w.Y == y);
             if (wall != null)
             {
                 Console.Write(GetSingleCharCell('W'));

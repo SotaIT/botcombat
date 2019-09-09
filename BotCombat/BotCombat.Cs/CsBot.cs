@@ -27,19 +27,19 @@ namespace BotCombat.Cs
 
         public int Id { get; }
 
-        public MoveDirection ChooseDirection(Step step)
+        public MoveDirection ChooseDirection(Game game)
         {
-            return Bot.ChooseDirection(step);
+            return Bot.ChooseDirection(game);
         }
 
-        public Dictionary<PowerStats, int> DistributePower(int power, Step step)
+        public Dictionary<PowerStats, int> DistributePower(int power, Game game)
         {
-            return Bot.DistributePower(power, step);
+            return Bot.DistributePower(power, game);
         }
 
-        public Dictionary<PowerStats, int> InitPower(int power, Step step)
+        public Dictionary<PowerStats, int> InitPower(int power, Game game)
         {
-            return Bot.InitPower(power, step);
+            return Bot.InitPower(power, game);
         }
 
         private IBot CreateBot(string sourceCode)

@@ -1,6 +1,6 @@
 ﻿namespace BotCombat.Web.Models
 {
-    public class Bonus
+    public class Object
     {
         public int X { get; set; }
 

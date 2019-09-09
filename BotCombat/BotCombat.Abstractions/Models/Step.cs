@@ -9,18 +9,12 @@ namespace BotCombat.Abstractions.Models
     public class Step
     {
         public Step(int number,
-            int mapId,
-            int width,
-            int height,
-            IList<Object> walls,
             IList<Object> bonuses,
             IDictionary<int, Bot> bots,
             IList<Log> logs,
             IList<int> deadBots)
         {
             Number = number;
-            Map = new Map(mapId, width, height);
-            Walls = new ReadOnlyCollection<Object>(walls);
             Bonuses = new ReadOnlyCollection<Object>(bonuses);
             Bots = new ReadOnlyDictionary<int, Bot>(bots);
             Logs = new ReadOnlyCollection<Log>(logs);
@@ -28,10 +22,6 @@ namespace BotCombat.Abstractions.Models
         }
 
         public int Number { get; }
-
-        public Map Map { get; }
-
-        public IReadOnlyList<Object> Walls { get; }
 
         public IReadOnlyList<Object> Bonuses { get; }
 

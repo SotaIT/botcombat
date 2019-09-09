@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using BotCombat.Abstractions;
-using BotCombat.Abstractions.Models;
 using BotCombat.Core;
-using Microsoft.AspNetCore.Mvc;
-using BotCombat.Web.Models;
-using BotCombat.Js;
 using BotCombat.Cs;
+using BotCombat.Js;
+using BotCombat.Web.Models;
+using Microsoft.AspNetCore.Mvc;
+using Game = BotCombat.Abstractions.Models.Game;
 using Map = BotCombat.Core.Map;
 
 namespace BotCombat.Web.Controllers
@@ -15,10 +16,10 @@ namespace BotCombat.Web.Controllers
     {
         public IActionResult Index()
         {
-            
-            var walls = new List<Wall> { new Wall(3, 3), new Wall(3, 4), new Wall(3, 5), new Wall(7, 2), new Wall(8, 2)};
-            
-            var bonuses = new List<Core.Bonus> { new Core.Bonus(0, 0, 5), new Core.Bonus(2, 1, 3), new Core.Bonus(3, 4, 15), new Core.Bonus(13, 11, 8) };
+            var walls = new List<Wall> { new Wall(3, 3), new Wall(3, 4), new Wall(3, 5), new Wall(7, 2), new Wall(8, 2) };
+
+            var bonuses = new List<Bonus>
+                {new Bonus(0, 0, 5), new Bonus(2, 1, 3), new Bonus(3, 4, 15), new Bonus(13, 11, 8)};
 
             var bots = new List<IBot>
             {
@@ -32,20 +33,16 @@ namespace BotCombat.Web.Controllers
             ViewData["Map"] = map;
 
             var mapManager = new MapManager(map, bots);
-
-            var steps = new List<Step>();
-            while(true)
+            Game game;
+            while (true)
             {
-                var step = mapManager.Step();
-                steps.Add(step);
+                game = mapManager.MakeStep();
+                var step = game.LastStep;
 
-                if (step.Bots.Count < 2)
-                {
-                    break;
-                }
+                if (step.Bots.Count < 2) break;
             }
 
-            ViewData["Steps"] = steps;
+            ViewData["Steps"] = game.Steps.ToList();
 
             return View();
         }

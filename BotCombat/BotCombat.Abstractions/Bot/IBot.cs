@@ -13,16 +13,16 @@ namespace BotCombat.Abstractions
         /// <summary>
         /// Distribute power points among stats
         /// </summary>
-        Dictionary<PowerStats, int> DistributePower(int power, Step step);
+        Dictionary<PowerStats, int> DistributePower(int power, Game game);
 
         /// <summary>
         /// Initial distribution of the power points among stats
         /// </summary>
-        Dictionary<PowerStats, int> InitPower(int power, Step step);
+        Dictionary<PowerStats, int> InitPower(int power, Game game);
 
         /// <summary>
         /// Choose the best direction to move
         /// </summary>
-        MoveDirection ChooseDirection(Step step);
+        MoveDirection ChooseDirection(Game game);
     }
 }

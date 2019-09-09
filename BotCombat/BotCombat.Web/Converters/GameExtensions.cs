@@ -1,38 +1,54 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using BotCombat.Abstractions;
-using BotCombat.Abstractions.Models;
 using BotCombat.Web.Models;
-using Bot = BotCombat.Web.Models.Bot;
-using Log = BotCombat.Web.Models.Log;
 
 namespace BotCombat.Web.Converters
 {
-    public static class StepExtensions
+    public static class GameExtensions
     {
-        public static IEnumerable<StepModel> ToModel(this IEnumerable<Step> steps)
+        public static Game ToModel(this Abstractions.Models.Game game)
         {
-            return steps.Select(ToModel);
+            return new Game
+            {
+                Map = game.Map.ToModel(),
+                Steps = game.Steps.ToModel()
+            };
         }
 
-        public static StepModel ToModel(this Step step)
+        public static Map ToModel(this Abstractions.Models.Map map)
         {
-            return new StepModel
+            return new Map
+            {
+                Id = map.Id,
+                Width = map.Width,
+                Height = map.Height,
+                Walls = map.Walls.ToModel()
+            };
+        }
+
+        public static List<Step> ToModel(this IEnumerable<Abstractions.Models.Step> steps)
+        {
+            return steps.Select(ToModel).ToList();
+        }
+
+        public static Step ToModel(this Abstractions.Models.Step step)
+        {
+            return new Step
             {
                 Number = step.Number,
-                Bonuses = step.Bonuses.ToBonusModel(),
+                Bonuses = step.Bonuses.ToModel(),
                 Bots = step.Bots.Values.ToModel(),
                 DeadBots = step.DeadBots.ToList(),
                 Logs = step.Logs.ToModel()
             };
         }
 
-        public static List<Bonus> ToBonusModel(this IEnumerable<Object> bonuses)
+        public static List<Object> ToModel(this IEnumerable<Abstractions.Models.Object> objects)
         {
-            return bonuses.Select(bonus => new Bonus
+            return objects.Select(o => new Object
             {
-                X = bonus.X,
-                Y = bonus.Y
+                X = o.X,
+                Y = o.Y
             }).ToList();
         }
 

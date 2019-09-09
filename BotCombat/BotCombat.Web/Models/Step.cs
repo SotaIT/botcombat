@@ -2,11 +2,11 @@
 
 namespace BotCombat.Web.Models
 {
-    public class StepModel
+    public class Step
     {
         public int Number { get; set;}
 
-        public List<Bonus> Bonuses { get; set;}
+        public List<Object> Bonuses { get; set;}
 
         public List<Bot> Bots { get; set; }
 
