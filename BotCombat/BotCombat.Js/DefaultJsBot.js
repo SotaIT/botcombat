@@ -1,10 +1,4 @@
-﻿namespace BotCombat.Js
-{
-    public partial class JsBot
-    {
-        public const string DefaultSourceCode =
-@"
-function Bot() {
+﻿function Bot() {
     this.initPower = function (power, game, result) {
         distributePower(power, game, result);
     };
@@ -17,7 +11,4 @@ function Bot() {
     this.chooseDirection = function (game, result) {
         result.Direction = Math.floor(Math.random() * 5);
     };
-}
-";
-    }
 }

@@ -7,14 +7,18 @@ using Jint;
 
 namespace BotCombat.Js
 {
-    public partial class JsBot : IBot
+    public sealed partial class JsBot : IBot
     {
         private readonly Engine _engine;
 
-        public JsBot(int id, int timeOut, string code)
+        public JsBot(int id): this(id, DefaultSourceCode)
+        {
+            
+        }
+
+        public JsBot(int id, string code)
         {
             Id = id;
-            TimeOut = timeOut;
             _engine = new Engine();
 
             _engine.Execute(
@@ -26,8 +30,6 @@ namespace BotCombat.Js
     function chooseDirection(game, result) {{ bot.chooseDirection(game, result); }}
 ");
         }
-
-        public int TimeOut { get; }
 
         public int Id { get; }
 

@@ -13,17 +13,18 @@ namespace BotCombat.Cs
 {
     public sealed partial class CsBot : IBot
     {
-        public CsBot(int id, int timeOut, string code)
+        public CsBot(int id): this(id, DefaultSourceCode)
+        {
+            
+        }
+
+        public CsBot(int id, string code)
         {
             Id = id;
-            TimeOut = timeOut;
-
             Bot = CreateBot(code);
         }
 
         private IBot Bot { get; }
-
-        public int TimeOut { get; }
 
         public int Id { get; }
 
