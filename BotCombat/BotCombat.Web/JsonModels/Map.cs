@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BotCombat.Web.Models
+namespace BotCombat.Web.JsonModels
 {
     public class Map
     {

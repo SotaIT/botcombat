@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using BotCombat.Abstractions;
-using BotCombat.Abstractions.Models;
+using BotCombat.Abstractions.BotModels;
 
-namespace BotCombat.Core
+namespace BotCombat.Core.Models
 {
-    public class BotContainer : MapObject
+    internal class BotContainer : MapObject
     {
         private readonly IBot _bot;
 

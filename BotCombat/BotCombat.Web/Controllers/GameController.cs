@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BotCombat.Web.Converters;
+using BotCombat.Web.JsonModels;
 using BotCombat.Web.Models;
 using BotCombat.Web.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +16,7 @@ namespace BotCombat.Web.Controllers
         [HttpGet]
         public Game Play(int mapId, List<int> bots)
         {
-            return _gameService.Play(mapId, bots).ToModel();
+            return _gameService.Play(mapId, bots).ToJsonModel();
         }
-
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace BotCombat.Abstractions.Models
+﻿namespace BotCombat.Abstractions.BotModels
 {
     public class Bot : Object
     {

@@ -1,6 +1,6 @@
 ﻿using BotCombat.Abstractions;
 
-namespace BotCombat.Core
+namespace BotCombat.Core.Models
 {
     public abstract class MapObject : IMapObject
     {

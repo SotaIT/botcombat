@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using BotCombat.Abstractions;
-using BotCombat.Abstractions.Models;
+using BotCombat.Abstractions.BotModels;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -13,12 +13,12 @@ namespace BotCombat.Cs
 {
     public sealed partial class CsBot : IBot
     {
-        public CsBot(int id, int timeOut, string sourceCode)
+        public CsBot(int id, int timeOut, string code)
         {
             Id = id;
             TimeOut = timeOut;
 
-            Bot = CreateBot(sourceCode);
+            Bot = CreateBot(code);
         }
 
         private IBot Bot { get; }

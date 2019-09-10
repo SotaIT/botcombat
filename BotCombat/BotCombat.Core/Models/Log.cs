@@ -1,6 +1,6 @@
-﻿namespace BotCombat.Core
+﻿namespace BotCombat.Core.Models
 {
-    public class Log
+    internal class Log
     {
         public Log(int step, int x, int y, int sourceId, int targetId, int value)
         {

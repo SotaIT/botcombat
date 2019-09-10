@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BotCombat.Core
+namespace BotCombat.Core.Models
 {
     public class Map
     {

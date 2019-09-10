@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace BotCombat.Abstractions.Models
+namespace BotCombat.Abstractions.BotModels
 {
     /// <summary>
     /// The model of the current step

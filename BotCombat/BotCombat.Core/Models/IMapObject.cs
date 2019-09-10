@@ -1,4 +1,4 @@
-﻿namespace BotCombat.Core
+﻿namespace BotCombat.Core.Models
 {
     public interface IMapObject
     {

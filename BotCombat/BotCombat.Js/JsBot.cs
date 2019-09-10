@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BotCombat.Abstractions;
-using BotCombat.Abstractions.Models;
+using BotCombat.Abstractions.BotModels;
 using Jint;
 
 namespace BotCombat.Js
@@ -11,7 +11,7 @@ namespace BotCombat.Js
     {
         private readonly Engine _engine;
 
-        public JsBot(int id, int timeOut, string sourceCode)
+        public JsBot(int id, int timeOut, string code)
         {
             Id = id;
             TimeOut = timeOut;
@@ -19,7 +19,7 @@ namespace BotCombat.Js
 
             _engine.Execute(
                 $@"{MoveDirectionToJs()}
-                {sourceCode}
+                {code}
     var bot = new Bot();
     function initPower(power, game, result) {{ bot.initPower(power, game, result); }}
     function distributePower(power, game, result) {{ bot.distributePower(power, game, result); }}

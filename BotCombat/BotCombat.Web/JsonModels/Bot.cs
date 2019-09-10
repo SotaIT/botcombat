@@ -1,4 +1,4 @@
-﻿namespace BotCombat.Web.Models
+﻿namespace BotCombat.Web.JsonModels
 {
     public class Bot
     {

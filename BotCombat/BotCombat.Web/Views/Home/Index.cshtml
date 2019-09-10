@@ -1,5 +1,6 @@
-﻿@using Map = BotCombat.Core.Map
-@using Step = BotCombat.Abstractions.Models.Step
+﻿@using BotCombat.Abstractions.BotModels
+@using Map = BotCombat.Core.Models.Map
+@using Step = BotCombat.Abstractions.BotModels.Step
 @{
     ViewData["Title"] = "Home Page";
     var map = ViewData["Map"] as Map;
@@ -31,7 +32,7 @@
         return string.Join(",", step.Logs.Select(l => GetLog(step, l)));
     }
 
-    static string GetLog(Step step, BotCombat.Abstractions.Models.Log log)
+    static string GetLog(Step step, Log log)
     {
         return log.SourceId == 0
             ? $"\"Bot #{log.TargetId} got {log.Value} power at ({log.X}, {log.Y})\""

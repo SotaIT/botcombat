@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BotCombat.Abstractions;
+using BotCombat.Abstractions.BotModels;
+using BotCombat.Core.Models;
+using Log = BotCombat.Core.Models.Log;
 
 namespace BotCombat.Core
 {
@@ -30,37 +33,37 @@ namespace BotCombat.Core
         }
 
 
-        public static IList<Abstractions.Models.Object> ToMapObjectModels(this IEnumerable<IMapObject> mapObjects)
+        public static IList<Object> ToMapObjectModels(this IEnumerable<IMapObject> mapObjects)
         {
             return mapObjects.Select(ToMapObjectModel)
                 .ToList();
         }
 
-        public static Abstractions.Models.Object ToMapObjectModel(this IMapObject mapObject)
+        public static Object ToMapObjectModel(this IMapObject mapObject)
         {
-            return new Abstractions.Models.Object(mapObject.X, mapObject.Y);
+            return new Object(mapObject.X, mapObject.Y);
         }
 
-        public static IDictionary<int, Abstractions.Models.Bot> ToMapBotModels(this IEnumerable<BotContainer> botContainers)
+        public static IDictionary<int, Bot> ToMapBotModels(this IEnumerable<BotContainer> botContainers)
         {
             return botContainers
                 .Select(ToMapBotModel)
                 .ToDictionary(b => b.Id, b => b);
         }
 
-        public static Abstractions.Models.Bot ToMapBotModel(this BotContainer botContainer)
+        public static Bot ToMapBotModel(this BotContainer botContainer)
         {
-            return new Abstractions.Models.Bot(botContainer.Id,
+            return new Bot(botContainer.Id,
                 botContainer.X,
                 botContainer.Y,
                 botContainer.Stamina,
                 botContainer.Strength);
         }
 
-        public static IList<Abstractions.Models.Log> ToLogModels(this IEnumerable<Log> logs)
+        public static IList<Abstractions.BotModels.Log> ToLogModels(this IEnumerable<Log> logs)
         {
             return logs
-                .Select(dl => new Abstractions.Models.Log(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Value))
+                .Select(dl => new Abstractions.BotModels.Log(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Value))
                 .ToList();
         }
     }

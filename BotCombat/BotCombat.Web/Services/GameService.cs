@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Game = BotCombat.Abstractions.Models.Game;
+using Game = BotCombat.Abstractions.BotModels.Game;
 
 namespace BotCombat.Web.Services
 {

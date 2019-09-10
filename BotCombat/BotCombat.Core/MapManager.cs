@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using BotCombat.Abstractions;
-using BotCombat.Abstractions.Models;
+using BotCombat.Abstractions.BotModels;
+using BotCombat.Core.Models;
+using Log = BotCombat.Core.Models.Log;
+using Map = BotCombat.Core.Models.Map;
 
 namespace BotCombat.Core
 {
@@ -23,7 +26,7 @@ namespace BotCombat.Core
 
         private readonly Map _map;
 
-        private readonly Abstractions.Models.Map _mapModel;
+        private readonly Abstractions.BotModels.Map _mapModel;
 
         private Game _game;
 
@@ -35,7 +38,7 @@ namespace BotCombat.Core
         {
             _map = map;
             _mapPoints = new List<IMapObject>[_map.Width, _map.Height];
-            _mapModel = new Abstractions.Models.Map(_map.Id, _map.Width, map.Height, _walls.ToMapObjectModels());
+            _mapModel = new Abstractions.BotModels.Map(_map.Id, _map.Width, map.Height, _walls.ToMapObjectModels());
 
             InitMapPoints();
 
@@ -84,28 +87,27 @@ namespace BotCombat.Core
                 MoveBot(bot, _game);
         }
 
-        public BotContainer MoveBot(BotContainer bot, Game game)
+        private void MoveBot(BotContainer bot, Game game)
         {
             var direction = bot.ChooseDirection(game);
             // bot doesn't want to move - stop
             if (direction == MoveDirection.None)
-                return bot;
+                return;
 
             // calculate the destination point
             var point = MapUtils.GetDestination(bot.X, bot.Y, direction);
 
             // bot is going to move out of the map - stop
             if (point.X >= _map.Width || point.X < 0 || point.Y >= _map.Height || point.Y < 0)
-                return bot;
+                return;
 
             // if there is a wall at the destination point - stop
             if (IsWall(point.X, point.Y))
-                return bot;
+                return;
 
             RemoveFromPoint(bot);
             bot.Move(direction);
             AddToPoint(bot);
-            return bot;
         }
 
         private void ComputeCollisions()

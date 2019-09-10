@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BotCombat.Abstractions;
-using BotCombat.Abstractions.Models;
+using BotCombat.Abstractions.BotModels;
 
 namespace BotCombat.Cs
 {

@@ -1,6 +1,4 @@
-﻿using BotCombat.Abstractions;
-
-namespace BotCombat.Core
+﻿namespace BotCombat.Core.Models
 {
     public class Wall : MapObject
     {
