@@ -2,7 +2,7 @@
 {
     public partial class CsBot
     {
-        public static string DefaultSourceCode =>
+        public const string DefaultSourceCode =
 @"
 using System;
 using System.Collections.Generic;

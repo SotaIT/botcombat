@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using BotCombat.Abstractions;
 using BotCombat.Abstractions.Models;
@@ -16,7 +17,7 @@ namespace BotCombat.Core
 
         private readonly Dictionary<int, int> _damageTaken = new Dictionary<int, int>();
 
-        private readonly List<BotContainer> _deadBots = new List<BotContainer>();
+        private readonly Dictionary<int, List<BotContainer>> _deadBots = new Dictionary<int, List<BotContainer>>();
 
         private readonly List<IMapObject>[,] _mapPoints;
 
@@ -45,6 +46,17 @@ namespace BotCombat.Core
             AddBots(bots);
         }
 
+        private List<BotContainer> CurrentStepDeadBots
+        {
+            get
+            {
+                var currentStepIndex = _steps.Count;
+                if(!_deadBots.ContainsKey(currentStepIndex))
+                    _deadBots[currentStepIndex] = new List<BotContainer>();
+                return _deadBots[currentStepIndex];
+            }
+        }
+
         private void CreateStep()
         {
             _steps.Add(new Step(
@@ -52,8 +64,9 @@ namespace BotCombat.Core
                 _bonuses.ToMapObjectModels(),
                 _bots.ToMapBotModels(),
                 _logs.Where(l => l.Step == _steps.Count).ToLogModels(),
-                _deadBots.Select(b => b.Id).ToList()
+                CurrentStepDeadBots.Select(b => b.Id).ToList()
             ));
+
             _game = new Game(_mapModel, _steps);
         }
 
@@ -113,7 +126,7 @@ namespace BotCombat.Core
             var deadBots = _bots.Where(b => _damageTaken[b.Id] >= b.Stamina * _map.StaminaWeight).ToList();
             foreach (var bot in deadBots)
             {
-                _deadBots.Add(bot);
+                CurrentStepDeadBots.Add(bot);
                 _bots.Remove(bot);
                 RemoveFromPoint(bot);
             }

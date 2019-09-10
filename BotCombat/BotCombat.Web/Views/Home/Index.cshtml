@@ -28,14 +28,19 @@
 
     static string GetLogs(Step step)
     {
-        return string.Join(",", step.Logs.Select(GetLog));
+        return string.Join(",", step.Logs.Select(l => GetLog(step, l)));
     }
 
-    static string GetLog(BotCombat.Abstractions.Models.Log log)
+    static string GetLog(Step step, BotCombat.Abstractions.Models.Log log)
     {
-        return log.SourceId==0
-                ? $"\"Bot #{log.TargetId} got {log.Value} power at ({log.X}, {log.Y})\""
-                : $"\"Bot #{log.SourceId} damaged bot #{log.TargetId} for {log.Value} at ({log.X}, {log.Y})\"";
+        return log.SourceId == 0
+            ? $"\"Bot #{log.TargetId} got {log.Value} power at ({log.X}, {log.Y})\""
+            : $"\"Bot #{log.SourceId} made {log.Value} damage to bot #{log.TargetId} at ({log.X}, {log.Y}){BotDied(step, log.TargetId)}\"";
+    }
+
+    static string BotDied(Step step, int id)
+    {
+        return step.DeadBots.Contains(id) ? $". Bot #{id} died" : "";
     }
 }
 
@@ -93,11 +98,13 @@
             ctx.drawImage(bg, 0, 0, step.map.width, step.map.height);
 
             for (let i = 0; i < step.logs.length; i++) {
-                log(step.logs[i]);
+                log('Step ' + stepNumber + ': ' + step.logs[i]);
             }
 
             stepNumber++;
             if (stepNumber >= steps.length) {
+                if(step.bots.length > 0)
+                    log('Step ' + (stepNumber - 1) + ': Bot #' + step.bots[i].id + ' won!');
                 log('Game Over!');
                 return;
             }
@@ -106,9 +113,10 @@
         }
 
         function log(s) {
-            var record = document.createElement('div');
+            let logDiv = document.getElementById('log');
+            let record = document.createElement('div');
             record.innerHTML = s;
-            document.getElementById('log').appendChild(record);
+            logDiv.insertBefore(record, logDiv.firstChild);
         }
 
         init();

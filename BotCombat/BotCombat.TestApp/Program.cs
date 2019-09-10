@@ -23,8 +23,7 @@ namespace BotCombat.TestApp
             {
                 new TestBot(),
                 new TestBot2(),
-                new JsBot(3, 100000, JsBot.DefaultInitPowerScript, JsBot.DefaultDistributePowerScript,
-                    JsBot.DefaultChooseDirectionScript),
+                new JsBot(3, 100000, JsBot.DefaultSourceCode),
                 new CsBot(4, 100000, CsBot.DefaultSourceCode)
             };
             var map = new Map(1, 5, 5, 32, 10, 1, 1, walls, bonuses);

@@ -7,28 +7,24 @@ using Jint;
 
 namespace BotCombat.Js
 {
-    public class JsBot : IBot
+    public partial class JsBot : IBot
     {
-        public const string DefaultInitPowerScript =
-            "result.Strength = power / 2; result.Stamina = power - result.Strength;";
-
-        public const string DefaultDistributePowerScript = DefaultInitPowerScript;
-        public const string DefaultChooseDirectionScript = "result.Direction = Math.floor(Math.random() * 5);";
-
         private readonly Engine _engine;
 
-        public JsBot(int id, int timeOut, string initPowerScript, string distributePowerScript,
-            string chooseDirectionScript)
+        public JsBot(int id, int timeOut, string sourceCode)
         {
             Id = id;
             TimeOut = timeOut;
             _engine = new Engine();
 
             _engine.Execute(
-                $"function initPower(power, game, result) {{ {initPowerScript} }}" +
-                $"function distributePower(power, game, result) {{ {distributePowerScript} }}" +
-                $"function chooseDirection(game, result) {{ {MoveDirectionToJs()} {chooseDirectionScript} }}"
-            );
+                $@"{MoveDirectionToJs()}
+                {sourceCode}
+    var bot = new Bot();
+    function initPower(power, game, result) {{ bot.initPower(power, game, result); }}
+    function distributePower(power, game, result) {{ bot.distributePower(power, game, result); }}
+    function chooseDirection(game, result) {{ bot.chooseDirection(game, result); }}
+");
         }
 
         public int TimeOut { get; }

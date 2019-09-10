@@ -23,11 +23,10 @@ namespace BotCombat.Web.Controllers
 
             var bots = new List<IBot>
             {
-                new CsBot(1, 100000, CsBot.DefaultSourceCode),
-                new CsBot(2, 100000, CsBot.DefaultSourceCode),
-                new JsBot(3, 100000, JsBot.DefaultInitPowerScript, JsBot.DefaultDistributePowerScript,
-                    JsBot.DefaultChooseDirectionScript),
-                new CsBot(4, 100000, CsBot.DefaultSourceCode)
+                //new CsBot(1, 100000, CsBot.DefaultSourceCode),
+                //new CsBot(2, 100000, CsBot.DefaultSourceCode),
+                new JsBot(3, 100000, JsBot.DefaultSourceCode),
+                new JsBot(4, 100000, JsBot.DefaultSourceCode),
             };
             var map = new Map(1, 20, 20, 32, 10, 1, 1, walls, bonuses);
             ViewData["Map"] = map;
