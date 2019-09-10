@@ -13,15 +13,10 @@ namespace BotCombat.Cs
 {
     public sealed partial class CsBot : IBot
     {
-        public CsBot(int id): this(id, DefaultSourceCode)
-        {
-            
-        }
-
-        public CsBot(int id, string code)
+        public CsBot(int id, string code = null)
         {
             Id = id;
-            Bot = CreateBot(code);
+            Bot = CreateBot(code ?? DefaultSourceCode);
         }
 
         private IBot Bot { get; }

@@ -7,6 +7,7 @@ using BotCombat.Core.Models;
 using BotCombat.Cs;
 using BotCombat.Js;
 using BotCombat.Web.Models;
+using BotCombat.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Game = BotCombat.Abstractions.BotModels.Game;
 using Map = BotCombat.Core.Models.Map;
@@ -24,10 +25,10 @@ namespace BotCombat.Web.Controllers
 
             var bots = new List<IBot>
             {
-                new CsBot(1),
-                new CsBot(2),
-                new JsBot(3),
-                new JsBot(4)
+                BotFactory.CreateBot(BotFactory.BotType.CSharp, 1),
+                BotFactory.CreateBot(BotFactory.BotType.CSharp, 2),
+                BotFactory.CreateBot(BotFactory.BotType.Javascript, 3),
+                BotFactory.CreateBot(BotFactory.BotType.Javascript, 4)
             };
             var map = new Map(1, 20, 20, 32, 10, 1, 1, walls, bonuses);
             ViewData["Map"] = map;

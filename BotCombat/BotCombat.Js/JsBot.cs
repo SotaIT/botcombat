@@ -11,19 +11,14 @@ namespace BotCombat.Js
     {
         private readonly Engine _engine;
 
-        public JsBot(int id): this(id, DefaultSourceCode)
-        {
-            
-        }
-
-        public JsBot(int id, string code)
+        public JsBot(int id, string code = null)
         {
             Id = id;
             _engine = new Engine();
 
             _engine.Execute(
                 $@"{MoveDirectionToJs()}
-                {code}
+                {code ?? DefaultSourceCode}
     var bot = new Bot();
     function initPower(power, game, result) {{ bot.initPower(power, game, result); }}
     function distributePower(power, game, result) {{ bot.distributePower(power, game, result); }}
