@@ -16,6 +16,13 @@ namespace BotCombat.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly GameService _gameService;
+
+        public HomeController(GameService gameService)
+        {
+            _gameService = gameService;
+        }
+
         public IActionResult Index()
         {
             var walls = new List<Wall> { new Wall(3, 3), new Wall(3, 4), new Wall(3, 5), new Wall(7, 2), new Wall(8, 2) };

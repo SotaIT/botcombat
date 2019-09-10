@@ -6,11 +6,20 @@ namespace BotCombat.Web.Services
 {
     public class GameService
     {
+        private readonly MapDataService _mapService;
+        private readonly BotDataService _botService;
+
+        public GameService(MapDataService mapService, BotDataService botService)
+        {
+            _mapService = mapService;
+            _botService = botService;
+        }
+
         public Game Play(int mapId, List<int> botIds)
         {
             // get map and bots from DB
-            var map = ServiceFactory.MapService.GetMap(mapId);
-            var bots = ServiceFactory.BotService.GetBots(botIds);
+            var map = _mapService.GetCoreMap(mapId);
+            var bots = _botService.GetBots(botIds);
 
             // create MapManager
             var mapManager = new MapManager(map, bots);

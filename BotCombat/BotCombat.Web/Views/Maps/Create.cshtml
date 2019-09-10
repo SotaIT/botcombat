@@ -1,0 +1,68 @@
+﻿@model BotCombat.Web.Data.Domain.Map
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Map</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BackgroundImageId" class="control-label"></label>
+                <input asp-for="BackgroundImageId" class="form-control" />
+                <span asp-validation-for="BackgroundImageId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Width" class="control-label"></label>
+                <input asp-for="Width" class="form-control" />
+                <span asp-validation-for="Width" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Height" class="control-label"></label>
+                <input asp-for="Height" class="form-control" />
+                <span asp-validation-for="Height" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Scale" class="control-label"></label>
+                <input asp-for="Scale" class="form-control" />
+                <span asp-validation-for="Scale" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InitialPower" class="control-label"></label>
+                <input asp-for="InitialPower" class="form-control" />
+                <span asp-validation-for="InitialPower" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StrengthWeight" class="control-label"></label>
+                <input asp-for="StrengthWeight" class="form-control" />
+                <span asp-validation-for="StrengthWeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StaminaWeight" class="control-label"></label>
+                <input asp-for="StaminaWeight" class="form-control" />
+                <span asp-validation-for="StaminaWeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

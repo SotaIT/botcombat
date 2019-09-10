@@ -1,6 +1,6 @@
 ﻿namespace BotCombat.Web.Services
 {
-    public class ImageService
+    public class ImageDataService
     {
         
     }

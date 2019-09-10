@@ -4,14 +4,16 @@ using BotCombat.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BotCombat.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190910120536_MapModels")]
+    partial class MapModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,6 +68,10 @@ namespace BotCombat.Web.Data.Migrations
                     b.Property<int>("ImageId");
 
                     b.Property<string>("Name");
+
+                    b.Property<int>("Stamina");
+
+                    b.Property<int>("Strength");
 
                     b.Property<int>("Type");
 

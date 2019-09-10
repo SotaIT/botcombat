@@ -10,11 +10,20 @@ namespace BotCombat.Web.Controllers
     [ApiController]
     public class GameController : ControllerBase
     {
+        private readonly GameService _gameService;
 
-        [HttpGet]
-        public Game Play(int mapId, List<int> bots)
+        public GameController(GameService gameService)
         {
-            return ServiceFactory.GameService.Play(mapId, bots).ToJsonModel();
+            _gameService = gameService;
         }
+
+        [HttpGet("{id}", Name = "Play")]
+        public Game Play(int id, [FromQuery(Name = "b")] List<int> bots)
+        {
+            return _gameService.Play(id, bots).ToJsonModel();
+        }
+
+
+
     }
 }

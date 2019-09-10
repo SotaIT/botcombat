@@ -1,59 +1,30 @@
-﻿@using BotCombat.Abstractions.BotModels
-@using Map = BotCombat.Core.Models.Map
-@using Step = BotCombat.Abstractions.BotModels.Step
+﻿@using Map = BotCombat.Core.Models.Map
 @{
     ViewData["Title"] = "Home Page";
     var map = ViewData["Map"] as Map;
-    var steps = ViewData["Steps"] as List<Step>;
-}
-@functions
-{
-    const int Scale = 32;
-
-    static string GetSteps(IEnumerable<Step> steps)
-    {
-        return string.Join(",", steps.Select(s => $"{{map:map,bonuses:[{GetBonuses(s)}],bots:[{GetBots(s)}],logs:[{GetLogs(s)}]}}"));
-    }
-
-    static string GetBonuses(Step step)
-    {
-        return string.Join(",",
-            step.Bonuses.Select(o => $"{{x:{o.X * Scale},y:{o.Y * Scale}}}"));
-    }
-
-    static string GetBots(Step step)
-    {
-        return string.Join(",",
-            step.Bots.Values.Select(o => $"{{x:{o.X * Scale},y:{o.Y * Scale},id:{o.Id}}}"));
-    }
-
-    static string GetLogs(Step step)
-    {
-        return string.Join(",", step.Logs.Select(l => GetLog(step, l)));
-    }
-
-    static string GetLog(Step step, Log log)
-    {
-        return log.SourceId == 0
-            ? $"\"Bot #{log.TargetId} got {log.Value} power at ({log.X}, {log.Y})\""
-            : $"\"Bot #{log.SourceId} made {log.Value} damage to bot #{log.TargetId} at ({log.X}, {log.Y}){BotDied(step, log.TargetId)}\"";
-    }
-
-    static string BotDied(Step step, int id)
-    {
-        return step.DeadBots.Contains(id) ? $". Bot #{id} died" : "";
-    }
 }
 
-@if (steps != null && map != null)
+
+@if (map != null)
 {
-    var width = map.Width * Scale;
-    var height = map.Height * Scale;
+    var width = map.Width * map.Scale;
+    var height = map.Height * map.Scale;
 
     <script>
+        var scale = @map.Scale;
+        var map = { width: @width, height: @height };
+        var steps = [];
+        document.addEventListener('DOMContentLoaded',
+            function() {
+                jQuery.ajax({
+                        url: "/api/game/1/?b=2&b=3"
+                    })
+                    .done(function(data) {
+                        steps = data.steps;
+                        init();
+                    });
+            });
 
-        var map = { width: @width, height: @height, scale: @Scale };
-        var steps = [@Html.Raw(GetSteps(steps))];
 
         var stepNumber = 0;
 
@@ -68,6 +39,7 @@
             bots[1].src = 'img/bot2.png';
             bots[2].src = 'img/bot3.png';
             bots[3].src = 'img/bot4.png';
+
             window.requestAnimationFrame(draw);
         }
 
@@ -79,27 +51,51 @@
 
         function draw() {
 
+            if (steps.length === 0) {
+                window.requestAnimationFrame(draw);
+                return;
+            }
+
             const step = steps[stepNumber];
 
             const ctx = document.getElementById('canvas').getContext('2d');
 
             ctx.globalCompositeOperation = 'destination-over';
-            ctx.clearRect(0, 0, step.map.width, step.map.height);
+            ctx.clearRect(0, 0, map.width * scale, map.height * scale);
 
             for (let i = 0; i < step.bots.length; i++) {
                 const bt = step.bots[i];
-                ctx.drawImage(getBotImage(bt.id), bt.x, bt.y, step.map.scale, step.map.scale);
+                ctx.drawImage(getBotImage(bt.id), bt.x * scale, bt.y * scale, scale, scale);
             }
 
             for (let i = 0; i < step.bonuses.length; i++) {
                 const b = step.bonuses[i];
-                ctx.drawImage(bonus, b.x, b.y, step.map.scale, step.map.scale);
+                ctx.drawImage(bonus, b.x * scale, b.y * scale, scale, scale);
             }
 
-            ctx.drawImage(bg, 0, 0, step.map.width, step.map.height);
+            ctx.drawImage(bg, 0, 0, map.width * scale, map.height * scale);
 
             for (let i = 0; i < step.logs.length; i++) {
-                log('Step ' + stepNumber + ': ' + step.logs[i]);
+                const l = step.logs[i];
+                let msg = '';
+                if (l.sourceId === 0) {
+                    msg =  'Bot #' + l.targetId +' got ' + l.value + ' power at (' + l.x + ', ' + l.y+ ')';
+                } else {
+
+                    let isDead = false;
+                    for (let j = 0; j < step.deadBots.length; j++) {
+                        if (step.deadBots[j] === l.targetId) {
+                            isDead = true;
+                            break;
+                        }
+                    }
+
+                    msg =  'Bot #' + l.sourceId +' made ' + l.value + ' damage to bot #' + l.targetId +' at (' + l.x + ', ' + l.y+ ')';
+                    if (isDead)
+                        msg += '. Bot #' + l.targetId +' died';
+                }
+
+                log('Step ' + stepNumber + ': ' + msg);
             }
 
             stepNumber++;
@@ -120,7 +116,6 @@
             logDiv.insertBefore(record, logDiv.firstChild);
         }
 
-        init();
 
     </script>
 

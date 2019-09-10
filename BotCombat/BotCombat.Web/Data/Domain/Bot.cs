@@ -8,10 +8,6 @@
 
         public int ImageId { get; set; }
 
-        public int Stamina { get; set; }
-
-        public int Strength { get; set; }
-
         public int Type { get; set; }
 
         public string Code { get; set; }
