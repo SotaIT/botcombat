@@ -10,19 +10,7 @@ namespace BotCombat.Web.Converters
         {
             return new Game
             {
-                Map = game.Map.ToJsonModel(),
                 Steps = game.Steps.ToJsonModel()
-            };
-        }
-
-        public static Map ToJsonModel(this Abstractions.BotModels.Map map)
-        {
-            return new Map
-            {
-                Id = map.Id,
-                Width = map.Width,
-                Height = map.Height,
-                Walls = map.Walls.ToJsonModel()
             };
         }
 
