@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using BotCombat.Abstractions.BotModels;
+﻿using BotCombat.Abstractions.BotModels;
 
 namespace BotCombat.Abstractions
 {
@@ -13,12 +12,7 @@ namespace BotCombat.Abstractions
         /// <summary>
         /// Distribute power points among stats
         /// </summary>
-        Dictionary<PowerStats, int> DistributePower(int power, Game game);
-
-        /// <summary>
-        /// Initial distribution of the power points among stats
-        /// </summary>
-        Dictionary<PowerStats, int> InitPower(int power, Game game);
+        PowerStats DistributePower(int power, Game game);
 
         /// <summary>
         /// Choose the best direction to move

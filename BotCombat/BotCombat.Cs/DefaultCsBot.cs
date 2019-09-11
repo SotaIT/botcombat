@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using BotCombat.Abstractions;
 using BotCombat.Abstractions.BotModels;
 
@@ -16,20 +15,15 @@ namespace BotCombat.Cs
             return (MoveDirection)(new Random().Next(4) + 1);
         }
 
-        public override Dictionary<PowerStats, int> DistributePower(int power, Game game)
+        public override PowerStats DistributePower(int power, Game game)
         {
             var strength = power / 2;
 
-            return new Dictionary<PowerStats, int>
+            return new PowerStats
             {
-                [PowerStats.Strength] = strength,
-                [PowerStats.Stamina] = power - strength
+                Strength = strength,
+                Stamina = power - strength
             };
-        }
-
-        public override Dictionary<PowerStats, int> InitPower(int power, Game game)
-        {
-            return DistributePower(power, game);
         }
     }
 }

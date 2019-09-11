@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using BotCombat.Abstractions;
 using BotCombat.Abstractions.BotModels;
@@ -19,8 +18,7 @@ namespace BotCombat.Js
             _engine.Execute(
                 $@"{MoveDirectionToJs()}
                 {code ?? DefaultSourceCode}
-    var bot = new Bot();
-    function initPower(power, game, result) {{ bot.initPower(power, game, result); }}
+    var bot = new iBot();
     function distributePower(power, game, result) {{ bot.distributePower(power, game, result); }}
     function chooseDirection(game, result) {{ bot.chooseDirection(game, result); }}
 ");
@@ -35,14 +33,9 @@ namespace BotCombat.Js
             return result.Direction;
         }
 
-        public Dictionary<PowerStats, int> DistributePower(int power, Game game)
+        public PowerStats DistributePower(int power, Game game)
         {
             return DistributePowerJs("distributePower", power, game);
-        }
-
-        public Dictionary<PowerStats, int> InitPower(int power, Game game)
-        {
-            return DistributePowerJs("initPower", power, game);
         }
 
         private static string MoveDirectionToJs()
@@ -51,24 +44,11 @@ namespace BotCombat.Js
             return $"let MoveDirection = {{{string.Join(", ", members)}}};";
         }
 
-        private Dictionary<PowerStats, int> DistributePowerJs(string funcName, int power, Game game)
+        private PowerStats DistributePowerJs(string funcName, int power, Game game)
         {
-            var result = new PowerResult();
+            var result = new PowerStats();
             _engine.Invoke(funcName, power, game, result);
-            return new Dictionary<PowerStats, int>
-            {
-                [PowerStats.Strength] = result.Strength,
-                [PowerStats.Stamina] = result.Stamina
-            };
-        }
-
-        private class PowerResult
-        {
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            public int Strength { get; set; }
-
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            public int Stamina { get; set; }
+            return result;
         }
 
         private class DirectionResult

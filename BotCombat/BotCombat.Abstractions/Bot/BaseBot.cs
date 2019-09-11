@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using BotCombat.Abstractions.BotModels;
+﻿using BotCombat.Abstractions.BotModels;
 
 namespace BotCombat.Abstractions
 {
@@ -13,7 +12,6 @@ namespace BotCombat.Abstractions
         public virtual int Id { get; }
 
         public abstract MoveDirection ChooseDirection(Game game);
-        public abstract Dictionary<PowerStats, int> DistributePower(int power, Game game);
-        public abstract Dictionary<PowerStats, int> InitPower(int power, Game game);
+        public abstract PowerStats DistributePower(int power, Game game);
     }
 }

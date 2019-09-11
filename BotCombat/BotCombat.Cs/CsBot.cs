@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -27,15 +26,9 @@ namespace BotCombat.Cs
         {
             return Bot.ChooseDirection(game);
         }
-
-        public Dictionary<PowerStats, int> DistributePower(int power, Game game)
+        public PowerStats DistributePower(int power, Game game)
         {
             return Bot.DistributePower(power, game);
-        }
-
-        public Dictionary<PowerStats, int> InitPower(int power, Game game)
-        {
-            return Bot.InitPower(power, game);
         }
 
         private IBot CreateBot(string sourceCode)

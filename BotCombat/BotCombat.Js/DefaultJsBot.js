@@ -1,8 +1,4 @@
-﻿function Bot() {
-    this.initPower = function (power, game, result) {
-        distributePower(power, game, result);
-    };
-
+﻿function iBot() {
     this.distributePower = function (power, game, result) {
         result.Strength = power / 2;
         result.Stamina = power - result.Strength;

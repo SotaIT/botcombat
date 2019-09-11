@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using BotCombat.Abstractions;
 using BotCombat.Abstractions.BotModels;
 
@@ -12,13 +10,13 @@ namespace BotCombat.Core.Models
 
         private int _power;
 
-        private Dictionary<PowerStats, int> _powerValues;
+        private PowerStats _powerStats;
 
         public BotContainer(IBot bot, int x, int y, int power, Game game) : base(x, y)
         {
             _bot = bot;
             _power = power;
-            PowerValues = _bot.InitPower(_power, game);
+            PowerStats = _bot.DistributePower(_power, game);
         }
 
         public int Id => _bot.Id;
@@ -26,26 +24,26 @@ namespace BotCombat.Core.Models
         /// <summary>
         /// Increases the health
         /// </summary>
-        public int Stamina => PowerValues[PowerStats.Stamina];
+        public int Stamina => PowerStats.Stamina;
 
         /// <summary>
         /// Increases the number of damage done
         /// </summary>
-        public int Strength => PowerValues[PowerStats.Strength];
+        public int Strength => PowerStats.Strength;
 
-        private Dictionary<PowerStats, int> PowerValues
+        private PowerStats PowerStats
         {
-            get => _powerValues;
+            get => _powerStats;
             set
             {
-                _powerValues = value;
+                _powerStats = value;
                 CheckPowerDistribution();
             }
         }
 
         private void CheckPowerDistribution()
         {
-            if (_power != PowerValues.Values.Sum())
+            if (_power != PowerStats.Power)
                 throw new Exception("Incorrect power distribution!");
         }
 
@@ -57,7 +55,7 @@ namespace BotCombat.Core.Models
         public void AddBonus(int power, Game game)
         {
             _power += power;
-            PowerValues = _bot.DistributePower(_power, game);
+            PowerStats = _bot.DistributePower(_power, game);
         }
     }
 }
