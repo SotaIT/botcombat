@@ -33,15 +33,19 @@ namespace BotCombat.Core
 
         private readonly List<Wall> _walls = new List<Wall>();
 
+        private readonly List<Trap> _traps = new List<Trap>();
+
         public MapManager(Map map, List<IBot> bots)
         {
             _map = map;
             _mapPoints = new List<IMapObject>[_map.Width, _map.Height];
-            _mapModel = new Abstractions.BotModels.Map(_map.Id, _map.Width, map.Height, _walls.ToMapObjectModels());
+            _mapModel = new Abstractions.BotModels.Map(_map.Id, _map.Width, map.Height, _walls.ToMapObjectModels(), _traps.ToMapObjectModels());
 
             InitMapPoints();
 
             AddWalls();
+
+            AddTraps();
 
             AddBonuses();
 
@@ -53,7 +57,7 @@ namespace BotCombat.Core
             get
             {
                 var currentStepIndex = _steps.Count;
-                if(!_deadBots.ContainsKey(currentStepIndex))
+                if (!_deadBots.ContainsKey(currentStepIndex))
                     _deadBots[currentStepIndex] = new List<BotContainer>();
                 return _deadBots[currentStepIndex];
             }
@@ -117,9 +121,11 @@ namespace BotCombat.Core
                     if (_mapPoints[x, y].Count > 1)
                     {
                         var bonus = FindBonus(x, y);
+                        var trap = FindTrap(x, y);
                         var bots = GetBots(x, y);
 
-                        AddBonuses(bonus, bots);
+                        AddBonus(bonus, bots);
+                        DamageByTrap(trap, bots);
                         DamageIntersectingBots(bots);
                     }
 
@@ -137,7 +143,7 @@ namespace BotCombat.Core
         /// All bots in the current point get bonus power
         /// The bonus is removed from the point
         /// </summary>
-        private void AddBonuses(Bonus bonus, List<BotContainer> bots)
+        private void AddBonus(Bonus bonus, List<BotContainer> bots)
         {
             if (bonus == null) return;
 
@@ -151,6 +157,20 @@ namespace BotCombat.Core
             // remove bonus from the map
             RemoveFromPoint(bonus);
             _bonuses.Remove(bonus);
+        }
+
+        /// <summary>
+        /// All bots in the current point get damage
+        /// </summary>
+        private void DamageByTrap(Trap trap, List<BotContainer> bots)
+        {
+            if (trap == null) return;
+
+            foreach (var bot in bots)
+            {
+                Damage(0, bot, trap.Damage);
+            }
+
         }
 
         /// <summary>
@@ -168,8 +188,13 @@ namespace BotCombat.Core
         private void Damage(BotContainer source, BotContainer target)
         {
             var damage = source.Strength * _map.StrengthWeight;
+            Damage(source.Id, target, damage);
+        }
+
+        private void Damage(int sourceId, BotContainer target, int damage)
+        {
             _damageTaken[target.Id] += damage;
-            _logs.Add(new Log(_steps.Count, source.X, source.Y, source.Id, target.Id, damage));
+            _logs.Add(new Log(_steps.Count, target.X, target.Y, sourceId, target.Id, -1 * damage));
         }
 
         #region MapPoints
@@ -192,6 +217,11 @@ namespace BotCombat.Core
         private Bonus FindBonus(int x, int y)
         {
             return _mapPoints[x, y].FirstOrDefault(o => o is Bonus) as Bonus;
+        }
+
+        private Trap FindTrap(int x, int y)
+        {
+            return _mapPoints[x, y].FirstOrDefault(o => o is Trap) as Trap;
         }
 
         private List<BotContainer> GetBots(int x, int y)
@@ -217,6 +247,18 @@ namespace BotCombat.Core
                 {
                     _mapPoints[wall.X, wall.Y].Add(wall);
                     _walls.Add(wall);
+                }
+
+            CreateStep();
+        }
+
+        private void AddTraps()
+        {
+            foreach (var trap in _map.Traps)
+                if (_mapPoints[trap.X, trap.Y].Count == 0)
+                {
+                    _mapPoints[trap.X, trap.Y].Add(trap);
+                    _traps.Add(trap);
                 }
 
             CreateStep();

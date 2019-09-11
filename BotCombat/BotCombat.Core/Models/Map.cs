@@ -12,7 +12,8 @@ namespace BotCombat.Core.Models
             int strengthWeight,
             int staminaWeight,
             List<Wall> walls,
-            List<Bonus> bonuses)
+            List<Bonus> bonuses,
+            List<Trap> traps)
         {
             Id = id;
             Width = width;
@@ -23,6 +24,7 @@ namespace BotCombat.Core.Models
             StaminaWeight = staminaWeight;
             Walls = walls;
             Bonuses = bonuses;
+            Traps = traps;
         }
 
         public int Id { get; }
@@ -42,5 +44,7 @@ namespace BotCombat.Core.Models
         public List<Wall> Walls { get; }
 
         public List<Bonus> Bonuses { get; }
+
+        public List<Trap> Traps { get; }
     }
 }

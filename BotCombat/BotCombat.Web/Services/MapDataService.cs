@@ -24,7 +24,8 @@ namespace BotCombat.Web.Services
                 dbMap.StrengthWeight,
                 dbMap.StaminaWeight,
                 Db.Walls.Where(w => w.MapId == mapId).Select(w => new Wall(w.X, w.Y)).ToList(),
-                Db.Bonuses.Where(b => b.MapId == mapId).Select(b => new Bonus(b.X, b.Y, b.Power)).ToList());
+                Db.Bonuses.Where(b => b.MapId == mapId).Select(b => new Bonus(b.X, b.Y, b.Power)).ToList(),
+                Db.Traps.Where(t => t.MapId == mapId).Select(t => new Trap(t.X, t.Y, t.Damage)).ToList());
         }
     }
 }

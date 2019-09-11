@@ -11,5 +11,7 @@
         public int Y { get; set; }
 
         public int Power { get; set; }
+
+        public int ImageId { get; set; }
     }
 }

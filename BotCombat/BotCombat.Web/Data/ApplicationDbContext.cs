@@ -17,7 +17,7 @@ namespace BotCombat.Web.Data
 
         public DbSet<Bonus> Bonuses { get; set; }
 
-        public DbSet<BonusImage> BonusImages { get; set; }
+        public DbSet<Trap> Traps { get; set; }
 
         public DbSet<Image> Images { get; set; }
 
