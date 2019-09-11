@@ -2,16 +2,17 @@
 @{
     ViewData["Title"] = "Home Page";
     var map = ViewData["Map"] as Map;
+    var scale = 32;
 }
 
 
 @if (map != null)
 {
-    var width = map.Width * map.Scale;
-    var height = map.Height * map.Scale;
+    var width = map.Width * scale;
+    var height = map.Height * scale;
 
     <script>
-        var map = { width: @width, height: @height, id: @map.Id, scale: @map.Scale };
+        var map = { width: @width, height: @height, id: @map.Id, scale: @scale };
         var scale = map.scale;
         var steps = [];
         document.addEventListener('DOMContentLoaded',
@@ -27,6 +28,7 @@
 
 
         var stepNumber = 0;
+        var frameNumber = 0;
 
         var bg = new Image();
         var bonus = new Image();
@@ -57,49 +59,66 @@
             }
 
             const step = steps[stepNumber];
-
             const ctx = document.getElementById('canvas').getContext('2d');
-
             ctx.globalCompositeOperation = 'destination-over';
             ctx.clearRect(0, 0, map.width, map.height);
-
+            
             for (let i = 0; i < step.bots.length; i++) {
                 const bt = step.bots[i];
-                ctx.drawImage(getBotImage(bt.id), bt.x * scale, bt.y * scale, scale, scale);
+                let x = bt.x * scale, y = bt.y * scale;
+                if (stepNumber > 0) {
+                    for (let j = 0; j < steps[stepNumber - 1].bots.length; j++) {
+                        let prevBot = steps[stepNumber - 1].bots[j];
+                        if (prevBot.id === bt.id) {
+                            x = prevBot.x * scale  + (bt.x - prevBot.x) * frameNumber;
+                            y = prevBot.y * scale  + (bt.y - prevBot.y) * frameNumber;
+                            break;
+                        }
+                    }
+                }
+
+                ctx.drawImage(getBotImage(bt.id), x, y, scale, scale);
             }
 
             for (let i = 0; i < step.bonuses.length; i++) {
                 const b = step.bonuses[i];
-                ctx.drawImage(bonus, b.x * scale, b.y * scale, scale, scale);
+                let x = b.x * scale, y = b.y * scale;
+                ctx.drawImage(bonus, x, y, scale, scale);
             }
 
             ctx.drawImage(bg, 0, 0, map.width, map.height);
 
-            for (let i = 0; i < step.logs.length; i++) {
-                const l = step.logs[i];
-                let msg = '';
-                if (l.sourceId === 0)
-                    if (l.value > 0)
-                        msg = 'Bot #' + l.targetId + ' got ' + l.value + ' power from bonus at (' + l.x + ', ' + l.y + ')';
+            frameNumber++;
+            if (frameNumber === scale) {
+
+                for (let i = 0; i < step.logs.length; i++) {
+                    const l = step.logs[i];
+                    let msg = '';
+                    if (l.sourceId === 0)
+                        if (l.value > 0)
+                            msg = 'Bot #' + l.targetId + ' got ' + l.value + ' power from bonus at (' + l.x + ', ' + l.y + ')';
+                        else
+                            msg = 'Bot #' + l.targetId + ' took ' + l.value + ' damage from trap at (' + l.x + ', ' + l.y + ')';
                     else
-                        msg = 'Bot #' + l.targetId + ' took ' + l.value + ' damage from trap at (' + l.x + ', ' + l.y + ')';
-                else
-                    msg = 'Bot #' + l.sourceId + ' made ' + l.value + ' damage to bot #' + l.targetId + ' at (' + l.x + ', ' + l.y + ')';
+                        msg = 'Bot #' + l.sourceId + ' made ' + l.value + ' damage to bot #' + l.targetId + ' at (' + l.x + ', ' + l.y + ')';
 
-                let isDead = false;
-                for (let j = 0; j < step.deadBots.length; j++) {
-                    if (step.deadBots[j] === l.targetId) {
-                        isDead = true;
-                        break;
+                    let isDead = false;
+                    for (let j = 0; j < step.deadBots.length; j++) {
+                        if (step.deadBots[j] === l.targetId) {
+                            isDead = true;
+                            break;
+                        }
                     }
-                }
-                if (isDead)
-                    msg += '. Bot #' + l.targetId + ' died';
+                    if (isDead)
+                        msg += '. Bot #' + l.targetId + ' died';
 
-                log('Step ' + stepNumber + ': ' + msg);
+                    log('Step ' + stepNumber + ': ' + msg);
+                }
+
+                stepNumber++;
+                frameNumber = 0;
             }
 
-            stepNumber++;
             if (stepNumber >= steps.length) {
                 if(step.bots.length > 0)
                     log('Step ' + (stepNumber - 1) + ': Bot #' + step.bots[0].id + ' won!');
@@ -107,7 +126,7 @@
                 return;
             }
 
-            setTimeout('window.requestAnimationFrame(draw);', 100);
+            window.requestAnimationFrame(draw);
         }
 
         function log(s) {
