@@ -1,6 +1,6 @@
 ﻿namespace BotCombat.Abstractions.BotModels
 {
-    public class Bot : Object
+    public class Bot : MapObject
     {
         public Bot(int id, int x, int y, int stamina, int strength) : base(x, y)
         {

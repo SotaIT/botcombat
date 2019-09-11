@@ -1,30 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using BotCombat.Core.Models;
 using BotCombat.Web.Models;
+using BotCombat.Web.Services;
 using Microsoft.AspNetCore.Mvc;
-using Map = BotCombat.Core.Models.Map;
 
 namespace BotCombat.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly GameService _gameService;
+
+        public HomeController(GameService gameService)
+        {
+            _gameService = gameService;
+        }
+
         public IActionResult Index()
         {
-            var walls = new List<Wall> { new Wall(3, 3), new Wall(3, 4), new Wall(3, 5), new Wall(7, 2), new Wall(8, 2) };
+            var mapId = 1;
+            var botIds = new List<int> {2, 3, 5, 6};
 
-            var bonuses = new List<Bonus>
-                {new Bonus(0, 0, 5), new Bonus(2, 1, 3), new Bonus(3, 4, 15), new Bonus(13, 11, 8)};
+            var game = _gameService.GetGame(mapId, botIds);
 
-            var traps = new List<Trap>
-                {new Trap(4, 4, 10)};
-
-            var map = new Map(1, 20, 15, 32, 10, 1, 1, walls, bonuses, traps);
-
-            ViewData["Map"] = map;
-
-
-            return View();
+            return View(game);
         }
 
         public IActionResult Privacy()

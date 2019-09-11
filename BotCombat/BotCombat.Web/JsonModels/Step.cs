@@ -6,7 +6,7 @@ namespace BotCombat.Web.JsonModels
     {
         public int Number { get; set;}
 
-        public List<Object> Bonuses { get; set;}
+        public List<Bonus> Bonuses { get; set;}
 
         public List<Bot> Bots { get; set; }
 

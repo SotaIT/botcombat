@@ -1,146 +1,162 @@
-﻿@using Map = BotCombat.Core.Models.Map
+﻿@model GameViewModel
 @{
     ViewData["Title"] = "Home Page";
-    var map = ViewData["Map"] as Map;
     var scale = 32;
+    var width = Model.Map.Width * scale;
+    var height = Model.Map.Height * scale;
 }
 
 
-@if (map != null)
-{
-    var width = map.Width * scale;
-    var height = map.Height * scale;
-
-    <script>
-        var map = { width: @width, height: @height, id: @map.Id, scale: @scale };
-        var scale = map.scale;
-        var steps = [];
-        document.addEventListener('DOMContentLoaded',
-            function() {
-                jQuery.ajax({
-                        url: "/api/game/1/?b=2&b=3"
-                    })
-                    .done(function(data) {
-                        steps = data.steps;
-                        init();
-                    });
-            });
+<script>
+    @*var wallImage = new Image();
+    wallImage.src = 'img/bonus.png';
+    var walls = [@Html.Raw(string.Join(", ", Model.Walls.Select(w => $"{{x:{w.X},y:{w.Y}}}")))];*@
 
 
-        var stepNumber = 0;
-        var frameNumber = 0;
+    var map = { width: @width, height: @height, id: @Model.Map.Id, scale: @scale };
+    var scale = map.scale;
+    var steps = [];
+    var stepNumber = 0;
+    var frameNumber = 0;
+    var imageIds = {
+        bg: @Model.Map.BackgroundImageId,
+        bonuses: {@Html.Raw(string.Join(", ", Model.Bonuses.Select(b => $"{b.Id}: {b.ImageId}")))},
+        bots: {@Html.Raw(string.Join(", ", Model.Bots.Select(b => $"{b.Id}: {b.ImageId}")))}
+    }
+    var images = {};
+    var loadingImageCount = 0;
+    function preLoadImages() {
+        @Html.Raw(string.Join(" ", Model.Images.Select(i => $"images[{i.Id}] = new Image(); images[{i.Id}].src = '{i.FileName}'; loadingImageCount++; images[{i.Id}].onload = imageLoaded();")))
+    }
+    preLoadImages();
 
-        var bg = new Image();
-        var bonus = new Image();
-        var bots = [new Image(), new Image(), new Image(), new Image()];
+    function imageLoaded() {
+        loadingImageCount--;
+    }
 
-        function init() {
-            bg.src = 'img/bg.png';
-            bonus.src = 'img/bonus.png';
-            bots[0].src = 'img/bot1.png';
-            bots[1].src = 'img/bot2.png';
-            bots[2].src = 'img/bot3.png';
-            bots[3].src = 'img/bot4.png';
+    function getBgImage() {
+        return images[imageIds.bg];
+    }
 
+    function getBotImage(id) {
+        return images[imageIds.bots[id]];
+    }
+
+    function getBonusImage(id) {
+        return images[imageIds.bonuses[id]];
+    }
+
+    document.addEventListener('DOMContentLoaded',
+        function() {
+            jQuery.ajax({
+                    url: "/api/game/@Model.Map.Id/?@Html.Raw(string.Join("&", Model.Bots.Select(b => $"b={b.Id}")))"
+                })
+                .done(function(data) {
+                    steps = data.steps;
+                    while (loadingImageCount > 0) {}
+                    init();
+                });
+        });
+
+    function init() {
+        window.requestAnimationFrame(draw);
+    }
+
+    function draw() {
+
+        if (steps.length === 0) {
             window.requestAnimationFrame(draw);
+            return;
         }
 
-        function getBotImage(id) {
-            if (bots[id])
-                return bots[id];
-            return bots[0];
-        }
+        const step = steps[stepNumber];
+        const ctx = document.getElementById('canvas').getContext('2d');
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.clearRect(0, 0, map.width, map.height);
 
-        function draw() {
+        //for (let i = 0; i < walls.length; i++) {
+        //    const w = walls[i];
+        //    let x = w.x * scale, y = w.y * scale;
+        //    ctx.drawImage(wallImage, x, y, scale, scale);
+        //}
 
-            if (steps.length === 0) {
-                window.requestAnimationFrame(draw);
-                return;
-            }
-
-            const step = steps[stepNumber];
-            const ctx = document.getElementById('canvas').getContext('2d');
-            ctx.globalCompositeOperation = 'destination-over';
-            ctx.clearRect(0, 0, map.width, map.height);
-            
-            for (let i = 0; i < step.bots.length; i++) {
-                const bt = step.bots[i];
-                let x = bt.x * scale, y = bt.y * scale;
-                if (stepNumber > 0) {
-                    for (let j = 0; j < steps[stepNumber - 1].bots.length; j++) {
-                        let prevBot = steps[stepNumber - 1].bots[j];
-                        if (prevBot.id === bt.id) {
-                            x = prevBot.x * scale  + (bt.x - prevBot.x) * frameNumber;
-                            y = prevBot.y * scale  + (bt.y - prevBot.y) * frameNumber;
-                            break;
-                        }
+        for (let i = 0; i < step.bots.length; i++) {
+            const bt = step.bots[i];
+            let x = bt.x * scale, y = bt.y * scale;
+            if (stepNumber > 0) {
+                for (let j = 0; j < steps[stepNumber - 1].bots.length; j++) {
+                    let prevBot = steps[stepNumber - 1].bots[j];
+                    if (prevBot.id === bt.id) {
+                        x = prevBot.x * scale  + (bt.x - prevBot.x) * frameNumber;
+                        y = prevBot.y * scale  + (bt.y - prevBot.y) * frameNumber;
+                        break;
                     }
                 }
-
-                ctx.drawImage(getBotImage(bt.id), x, y, scale, scale);
             }
 
-            for (let i = 0; i < step.bonuses.length; i++) {
-                const b = step.bonuses[i];
-                let x = b.x * scale, y = b.y * scale;
-                ctx.drawImage(bonus, x, y, scale, scale);
-            }
+            ctx.drawImage(getBotImage(bt.id), x, y, scale, scale);
+        }
 
-            ctx.drawImage(bg, 0, 0, map.width, map.height);
+        for (let i = 0; i < step.bonuses.length; i++) {
+            const b = step.bonuses[i];
+            let x = b.x * scale, y = b.y * scale;
+            ctx.drawImage(getBonusImage(b.id), x, y, scale, scale);
+        }
 
-            frameNumber++;
-            if (frameNumber === scale) {
+        ctx.drawImage(getBgImage(), 0, 0, map.width, map.height);
 
-                for (let i = 0; i < step.logs.length; i++) {
-                    const l = step.logs[i];
-                    let msg = '';
-                    if (l.sourceId === 0)
-                        if (l.value > 0)
-                            msg = 'Bot #' + l.targetId + ' got ' + l.value + ' power from bonus at (' + l.x + ', ' + l.y + ')';
-                        else
-                            msg = 'Bot #' + l.targetId + ' took ' + l.value + ' damage from trap at (' + l.x + ', ' + l.y + ')';
+        frameNumber++;
+        if (frameNumber === scale) {
+
+            for (let i = 0; i < step.logs.length; i++) {
+                const l = step.logs[i];
+                let msg = '';
+                if (l.sourceId === 0)
+                    if (l.value > 0)
+                        msg = 'Bot #' + l.targetId + ' got ' + l.value + ' power from bonus at (' + l.x + ', ' + l.y + ')';
                     else
-                        msg = 'Bot #' + l.sourceId + ' made ' + l.value + ' damage to bot #' + l.targetId + ' at (' + l.x + ', ' + l.y + ')';
+                        msg = 'Bot #' + l.targetId + ' took ' + l.value + ' damage from trap at (' + l.x + ', ' + l.y + ')';
+                else
+                    msg = 'Bot #' + l.sourceId + ' made ' + l.value + ' damage to bot #' + l.targetId + ' at (' + l.x + ', ' + l.y + ')';
 
-                    let isDead = false;
-                    for (let j = 0; j < step.deadBots.length; j++) {
-                        if (step.deadBots[j] === l.targetId) {
-                            isDead = true;
-                            break;
-                        }
+                let isDead = false;
+                for (let j = 0; j < step.deadBots.length; j++) {
+                    if (step.deadBots[j] === l.targetId) {
+                        isDead = true;
+                        break;
                     }
-                    if (isDead)
-                        msg += '. Bot #' + l.targetId + ' died';
-
-                    log('Step ' + stepNumber + ': ' + msg);
                 }
+                if (isDead)
+                    msg += '. Bot #' + l.targetId + ' died';
 
-                stepNumber++;
-                frameNumber = 0;
+                log('Step ' + stepNumber + ': ' + msg);
             }
 
-            if (stepNumber >= steps.length) {
-                if(step.bots.length > 0)
-                    log('Step ' + (stepNumber - 1) + ': Bot #' + step.bots[0].id + ' won!');
-                log('Game Over!');
-                return;
-            }
-
-            window.requestAnimationFrame(draw);
+            stepNumber++;
+            frameNumber = 0;
         }
 
-        function log(s) {
-            let logDiv = document.getElementById('log');
-            let record = document.createElement('div');
-            record.innerHTML = s;
-            logDiv.insertBefore(record, logDiv.firstChild);
+        if (stepNumber >= steps.length) {
+            if(step.bots.length > 0)
+                log('Step ' + (stepNumber - 1) + ': Bot #' + step.bots[0].id + ' won!');
+            log('Game Over!');
+            return;
         }
 
+        window.requestAnimationFrame(draw);
+    }
 
-    </script>
+    function log(s) {
+        let logDiv = document.getElementById('log');
+        let record = document.createElement('div');
+        record.innerHTML = s;
+        logDiv.insertBefore(record, logDiv.firstChild);
+    }
 
-    <div class="text-center">
-        <canvas id="canvas" width="@(width)" height="@(height)"></canvas>
-        <div id="log"></div>
-    </div>
-}
+
+</script>
+
+<div class="text-center">
+    <canvas id="canvas" width="@(width)" height="@(height)"></canvas>
+    <div id="log"></div>
+</div>

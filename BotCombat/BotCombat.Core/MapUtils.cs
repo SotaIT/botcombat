@@ -3,7 +3,10 @@ using System.Linq;
 using BotCombat.Abstractions;
 using BotCombat.Abstractions.BotModels;
 using BotCombat.Core.Models;
-using Log = BotCombat.Core.Models.Log;
+using Bonus = BotCombat.Abstractions.BotModels.Bonus;
+using Log = BotCombat.Abstractions.BotModels.Log;
+using Trap = BotCombat.Abstractions.BotModels.Trap;
+using Wall = BotCombat.Abstractions.BotModels.Wall;
 
 namespace BotCombat.Core
 {
@@ -11,7 +14,7 @@ namespace BotCombat.Core
     {
         public static Coordinates GetDestination(int x, int y, MoveDirection direction)
         {
-            var point = new Coordinates { X = x, Y = y };
+            var point = new Coordinates {X = x, Y = y};
 
             switch (direction)
             {
@@ -33,25 +36,46 @@ namespace BotCombat.Core
         }
 
 
-        public static IList<Object> ToMapObjectModels(this IEnumerable<IMapObject> mapObjects)
+        public static IList<Bonus> ToBotModel(this IEnumerable<Models.Bonus> mapObjects)
         {
-            return mapObjects.Select(ToMapObjectModel)
+            return mapObjects.Select(ToBotModel)
                 .ToList();
         }
 
-        public static Object ToMapObjectModel(this IMapObject mapObject)
+        public static Bonus ToBotModel(this Models.Bonus mapObject)
         {
-            return new Object(mapObject.X, mapObject.Y);
+            return new Bonus(mapObject.Id, mapObject.X, mapObject.Y, mapObject.Power);
         }
 
-        public static IDictionary<int, Bot> ToMapBotModels(this IEnumerable<BotContainer> botContainers)
+        public static IList<Wall> ToBotModel(this IEnumerable<Models.Wall> mapObjects)
+        {
+            return mapObjects.Select(ToBotModel)
+                .ToList();
+        }
+
+        public static Wall ToBotModel(this Models.Wall mapObject)
+        {
+            return new Wall(mapObject.X, mapObject.Y);
+        }
+
+        public static IList<Trap> ToBotModel(this IEnumerable<Models.Trap> mapObjects)
+        {
+            return mapObjects.Select(ToBotModel).ToList();
+        }
+
+        public static Trap ToBotModel(this Models.Trap mapObject)
+        {
+            return new Trap(mapObject.X, mapObject.Y, mapObject.Damage);
+        }
+
+        public static IDictionary<int, Bot> ToBotModel(this IEnumerable<BotContainer> botContainers)
         {
             return botContainers
-                .Select(ToMapBotModel)
+                .Select(ToBotModel)
                 .ToDictionary(b => b.Id, b => b);
         }
 
-        public static Bot ToMapBotModel(this BotContainer botContainer)
+        public static Bot ToBotModel(this BotContainer botContainer)
         {
             return new Bot(botContainer.Id,
                 botContainer.X,
@@ -60,10 +84,10 @@ namespace BotCombat.Core
                 botContainer.Strength);
         }
 
-        public static IList<Abstractions.BotModels.Log> ToLogModels(this IEnumerable<Log> logs)
+        public static IList<Log> ToBotModel(this IEnumerable<Models.Log> logs)
         {
             return logs
-                .Select(dl => new Abstractions.BotModels.Log(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Value))
+                .Select(dl => new Log(dl.X, dl.Y, dl.SourceId, dl.TargetId, dl.Value))
                 .ToList();
         }
     }

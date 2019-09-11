@@ -2,6 +2,7 @@
 using System.Linq;
 using BotCombat.Abstractions;
 using BotCombat.Web.Data;
+using BotCombat.Web.Data.Domain;
 
 namespace BotCombat.Web.Services
 {
@@ -11,7 +12,7 @@ namespace BotCombat.Web.Services
         {
         }
 
-        internal List<IBot> GetBots(List<int> botIds)
+        public List<IBot> GetFullBots(List<int> botIds)
         {
             return Db.Bots
                 .Where(bot => botIds.Contains(bot.Id))
@@ -19,5 +20,9 @@ namespace BotCombat.Web.Services
                 .ToList();
         }
 
+        public IQueryable<Bot> GetBots(List<int> botIds)
+        {
+            return Db.Bots.Where(bot => botIds.Contains(bot.Id));
+        }
     }
 }

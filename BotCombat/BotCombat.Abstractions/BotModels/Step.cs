@@ -9,13 +9,13 @@ namespace BotCombat.Abstractions.BotModels
     public class Step
     {
         public Step(int number,
-            IList<Object> bonuses,
+            IList<Bonus> bonuses,
             IDictionary<int, Bot> bots,
             IList<Log> logs,
             IList<int> deadBots)
         {
             Number = number;
-            Bonuses = new ReadOnlyCollection<Object>(bonuses);
+            Bonuses = new ReadOnlyCollection<Bonus>(bonuses);
             Bots = new ReadOnlyDictionary<int, Bot>(bots);
             Logs = new ReadOnlyCollection<Log>(logs);
             DeadBots = new ReadOnlyCollection<int>(deadBots);
@@ -23,7 +23,7 @@ namespace BotCombat.Abstractions.BotModels
 
         public int Number { get; }
 
-        public IReadOnlyList<Object> Bonuses { get; }
+        public IReadOnlyList<Bonus> Bonuses { get; }
 
         public IReadOnlyDictionary<int, Bot> Bots { get; }
 

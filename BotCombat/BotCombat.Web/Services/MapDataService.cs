@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using BotCombat.Core.Models;
 using BotCombat.Web.Data;
+using BotCombat.Web.Data.Domain;
 
 namespace BotCombat.Web.Services
 {
@@ -10,22 +10,42 @@ namespace BotCombat.Web.Services
         {
         }
 
-        internal Map GetCoreMap(int mapId)
+        public Core.Models.Map GetCoreMap(int mapId)
         {
-            var dbMap = Db.Maps.FirstOrDefault(m => m.Id == mapId);
+            var dbMap = GetMap(mapId);
             if (dbMap == null)
                 return null;
 
-            return new Map(dbMap.Id,
+            return new Core.Models.Map(dbMap.Id,
                 dbMap.Width,
                 dbMap.Height,
                 dbMap.Scale,
                 dbMap.InitialPower,
                 dbMap.StrengthWeight,
                 dbMap.StaminaWeight,
-                Db.Walls.Where(w => w.MapId == mapId).Select(w => new Wall(w.X, w.Y)).ToList(),
-                Db.Bonuses.Where(b => b.MapId == mapId).Select(b => new Bonus(b.X, b.Y, b.Power)).ToList(),
-                Db.Traps.Where(t => t.MapId == mapId).Select(t => new Trap(t.X, t.Y, t.Damage)).ToList());
+                GetMapWalls(mapId).Select(w => new Core.Models.Wall(w.X, w.Y)).ToList(),
+                GetMapBonuses(mapId).Select(b => new Core.Models.Bonus(b.Id, b.X, b.Y, b.Power)).ToList(),
+                GetMapTraps(mapId).Select(t => new Core.Models.Trap(t.X, t.Y, t.Damage)).ToList());
+        }
+
+        public Map GetMap(int mapId)
+        {
+            return Db.Maps.FirstOrDefault(m => m.Id == mapId);
+        }
+
+        public IQueryable<Wall> GetMapWalls(int mapId)
+        {
+            return Db.Walls.Where(i => i.MapId == mapId);
+        }
+
+        public IQueryable<Bonus> GetMapBonuses(int mapId)
+        {
+            return Db.Bonuses.Where(i => i.MapId == mapId);
+        }
+
+        public IQueryable<Trap> GetMapTraps(int mapId)
+        {
+            return Db.Traps.Where(i => i.MapId == mapId);
         }
     }
 }

@@ -31,10 +31,11 @@ namespace BotCombat.Web.Converters
             };
         }
 
-        public static List<Object> ToJsonModel(this IEnumerable<Abstractions.BotModels.Object> objects)
+        public static List<Bonus> ToJsonModel(this IEnumerable<Abstractions.BotModels.Bonus> objects)
         {
-            return objects.Select(o => new Object
+            return objects.Select(o => new Bonus
             {
+                Id = o.Id,
                 X = o.X,
                 Y = o.Y
             }).ToList();

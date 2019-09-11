@@ -6,6 +6,9 @@ using BotCombat.Abstractions.BotModels;
 using BotCombat.Core.Models;
 using Log = BotCombat.Core.Models.Log;
 using Map = BotCombat.Core.Models.Map;
+using Bonus = BotCombat.Core.Models.Bonus;
+using Wall = BotCombat.Core.Models.Wall;
+using Trap = BotCombat.Core.Models.Trap;
 
 namespace BotCombat.Core
 {
@@ -39,7 +42,7 @@ namespace BotCombat.Core
         {
             _map = map;
             _mapPoints = new List<IMapObject>[_map.Width, _map.Height];
-            _mapModel = new Abstractions.BotModels.Map(_map.Id, _map.Width, map.Height, _walls.ToMapObjectModels(), _traps.ToMapObjectModels());
+            _mapModel = new Abstractions.BotModels.Map(_map.Id, _map.Width, map.Height, _walls.ToBotModel(), _traps.ToBotModel());
 
             InitMapPoints();
 
@@ -67,9 +70,9 @@ namespace BotCombat.Core
         {
             _steps.Add(new Step(
                 _steps.Count,
-                _bonuses.ToMapObjectModels(),
-                _bots.ToMapBotModels(),
-                _logs.Where(l => l.Step == _steps.Count).ToLogModels(),
+                _bonuses.ToBotModel(),
+                _bots.ToBotModel(),
+                _logs.Where(l => l.Step == _steps.Count).ToBotModel(),
                 CurrentStepDeadBots.Select(b => b.Id).ToList()
             ));
 

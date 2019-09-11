@@ -1,8 +1,8 @@
 ﻿namespace BotCombat.Abstractions.BotModels
 {
-    public class Object
+    public abstract class MapObject
     {
-        public Object(int x, int y)
+        protected MapObject(int x, int y)
         {
             X = x;
             Y = y;

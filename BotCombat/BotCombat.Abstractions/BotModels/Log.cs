@@ -1,6 +1,6 @@
 ﻿namespace BotCombat.Abstractions.BotModels
 {
-    public class Log : Object
+    public class Log : MapObject
     {
         public Log(int x, int y, int sourceId, int targetId, int value) : base(x, y)
         {
