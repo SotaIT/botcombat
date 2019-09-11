@@ -44,7 +44,7 @@ namespace BotCombat.Core.Models
         private void CheckPowerDistribution()
         {
             if (_power != PowerStats.Power)
-                throw new Exception("Incorrect power distribution!");
+                throw new ArgumentOutOfRangeException(nameof(PowerStats), "Incorrect power distribution!");
         }
 
         public MoveDirection ChooseDirection(Game game)
