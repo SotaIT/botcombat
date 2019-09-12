@@ -2,26 +2,28 @@
 @{
     ViewData["Title"] = "Home Page";
     var scale = 32;
-    var speed = 1;
     var width = Model.Map.Width * scale;
     var height = Model.Map.Height * scale;
 }
 
 
-<script>
+    <script>
     var map = { width: @width, height: @height, id: @Model.Map.Id, scale: @scale };
     var scale = map.scale;
-    var speed = @speed;
+    var speed = 1/2/2/2;
     var steps = [];
-    var stepNumber = 0;
+    var stepNumber = 4;
     var frameNumber = 0;
-    var frameInterval = speed * scale / 24;
+    var frameInterval = speed * scale / 8;
+    var botSize = 64;
+
     var imageIds = {
         bg: @Model.Map.BackgroundImageId,
         bonuses: {@Html.Raw(string.Join(", ", Model.Bonuses.Select(b => $"{b.Id}: {b.ImageId}")))},
         bots: {@Html.Raw(string.Join(", ", Model.Bots.Select(b => $"{b.Id}: {b.ImageId}")))}
     }
     var images = {};
+    var botImages = {};
     var loadingImageCount = 0;
     function preLoadImages() {
         @Html.Raw(string.Join(" ", Model.Images.Select(i => $"images[{i.Id}] = new Image(); images[{i.Id}].src = '{i.FileName}'; loadingImageCount++; images[{i.Id}].onload = imageLoaded();")))
@@ -72,34 +74,91 @@
         ctx.globalCompositeOperation = 'destination-over';
         ctx.clearRect(0, 0, map.width, map.height);
 
-        for (let i = 0; i < step.bots.length; i++) {
-            const bt = step.bots[i];
-            let x = bt.x * scale, y = bt.y * scale;
-            if (stepNumber > 0) {
-                for (let j = 0; j < steps[stepNumber - 1].bots.length; j++) {
-                    let prevBot = steps[stepNumber - 1].bots[j];
-                    if (prevBot.id === bt.id) {
-                        x = prevBot.x * scale  + (bt.x - prevBot.x) * frameNumber;
-                        y = prevBot.y * scale  + (bt.y - prevBot.y) * frameNumber;
-                        break;
-                    }
-                }
-            }
+        drawBots(ctx, step);
 
-            ctx.drawImage(getBotImage(bt.id), x, y, scale, scale);
-        }
+        drawBonuses(ctx, step);
 
-        for (let i = 0; i < step.bonuses.length; i++) {
-            const b = step.bonuses[i];
-            let x = b.x * scale, y = b.y * scale;
-            ctx.drawImage(getBonusImage(b.id), x, y, scale, scale);
-        }
-
-        ctx.drawImage(getBgImage(), 0, 0, map.width, map.height);
+        drawBackground(ctx);
 
         frameNumber += frameInterval;
         if (frameNumber >= scale) {
 
+            writeLogs(step);
+
+            stepNumber++;
+            frameNumber = 0;
+        }
+
+        if (stepNumber >= steps.length) {
+            if(step.bots.length > 0)
+                log('Step ' + (stepNumber - 1) + ': Bot #' + step.bots[0].id + ' won!');
+            log('Game Over!');
+            return;
+        }
+
+        window.requestAnimationFrame(draw);
+    }
+
+        function drawBots(ctx, step) {
+            for (let i = 0; i < step.bots.length; i++) {
+                const bt = step.bots[i];
+                let x = bt.x * scale, y = bt.y * scale;
+                let sx = -1, sy = -1;
+
+                if (stepNumber > 0) {
+                    for (let j = 0; j < steps[stepNumber - 1].bots.length; j++) {
+                        let prevBot = steps[stepNumber - 1].bots[j];
+                        if (prevBot.id === bt.id) {
+                            if (prevBot.x > bt.x) {
+                                // left
+                                sy = botSize * 2;
+                            }
+                            else if (prevBot.x < bt.x) {
+                                // right
+                                sy = botSize * 4;
+                            } else if (prevBot.y > bt.y) {
+                                // up
+                                sy = botSize;
+                            } else if (prevBot.y < bt.y) {
+                                // down
+                                sy = botSize * 3;
+                            } else {
+                                // stop
+                                sx = 0; 
+                                sy = 0;
+                            }
+
+                            if (sx === -1) {
+                                let f = Math.floor(8 * 8 * frameNumber * speed / scale);
+                                while (f > 7)
+                                    f -= 8;
+                            
+                                sx = botSize * f;
+                            }
+
+                            x = prevBot.x * scale + (bt.x - prevBot.x) * frameNumber;
+                            y = prevBot.y * scale + (bt.y - prevBot.y) * frameNumber;
+                            break;
+                        }
+                    }
+                }
+
+                ctx.drawImage(getBotImage(bt.id), sx, sy, botSize, botSize, x, y, scale, scale);
+            }
+        }
+
+        function drawBonuses(ctx, step) {
+            for (let i = 0; i < step.bonuses.length; i++) {
+                const b = step.bonuses[i];
+                ctx.drawImage(getBonusImage(b.id), b.x * scale, b.y * scale, scale, scale);
+            }
+
+        }
+        function drawBackground(ctx) {
+            ctx.drawImage(getBgImage(), 0, 0, map.width, map.height);
+        }
+
+        function writeLogs(step) {
             for (let i = 0; i < step.logs.length; i++) {
                 const l = step.logs[i];
                 let msg = '';
@@ -123,20 +182,7 @@
 
                 log('Step ' + stepNumber + ': ' + msg);
             }
-
-            stepNumber++;
-            frameNumber = 0;
         }
-
-        if (stepNumber >= steps.length) {
-            if(step.bots.length > 0)
-                log('Step ' + (stepNumber - 1) + ': Bot #' + step.bots[0].id + ' won!');
-            log('Game Over!');
-            return;
-        }
-
-        window.requestAnimationFrame(draw);
-    }
 
     function log(s) {
         let logDiv = document.getElementById('log');
@@ -146,7 +192,7 @@
     }
 
 
-</script>
+    </script>
 
 <div class="text-center">
     <canvas id="canvas" width="@(width)" height="@(height)"></canvas>

@@ -5,6 +5,6 @@
     };
 
     this.chooseDirection = function (game, result) {
-        result.Direction = Math.floor(Math.random() * 5);
+        result.Direction = Math.floor(Math.random() * 4) + 1;
     };
 }
