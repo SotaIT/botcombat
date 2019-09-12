@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using BotCombat.Abstractions;
 using BotCombat.Abstractions.BotModels;
+using BotCombat.BotUtils.Extensions;
 using Jint;
 
 namespace BotCombat.Js
@@ -56,5 +58,10 @@ namespace BotCombat.Js
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public MoveDirection Direction { get; set; }
         }
+
+        private static string DefaultSourceCode =>
+            Assembly
+                .GetCallingAssembly()
+                .GetEmbeddedResource("Resources.DefaultJsBot.js");
     }
 }

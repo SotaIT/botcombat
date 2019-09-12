@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BotCombat.Abstractions;
 using BotCombat.Abstractions.BotModels;
+using BotCombat.BotUtils.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -75,5 +76,10 @@ namespace BotCombat.Cs
         {
             return string.Join(" \n", emitResult.Diagnostics);
         }
+
+        private static string DefaultSourceCode =>
+            Assembly
+                .GetCallingAssembly()
+                .GetEmbeddedResource("Resources.DefaultCsBot.cs");
     }
 }

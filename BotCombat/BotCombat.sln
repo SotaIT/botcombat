@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotCombat.Abstractions", "B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotCombat.Web", "BotCombat.Web\BotCombat.Web.csproj", "{4BA5F5A9-FC45-4328-92B8-06DDE4FC5FE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotCombat.BotUtils", "BotCombat.BotUtils\BotCombat.BotUtils.csproj", "{616CAA97-85A3-48C9-8A1C-7E66A1254634}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{4BA5F5A9-FC45-4328-92B8-06DDE4FC5FE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BA5F5A9-FC45-4328-92B8-06DDE4FC5FE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BA5F5A9-FC45-4328-92B8-06DDE4FC5FE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{616CAA97-85A3-48C9-8A1C-7E66A1254634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{616CAA97-85A3-48C9-8A1C-7E66A1254634}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{616CAA97-85A3-48C9-8A1C-7E66A1254634}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{616CAA97-85A3-48C9-8A1C-7E66A1254634}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,6 +58,7 @@ Global
 		{A9ED1B7D-3070-4238-86F2-0C3B71A38488} = {AF5336C9-B9C3-4DC9-B902-D9CA920762AC}
 		{26757C0F-97B8-48B4-AD2A-D5EA6E25623B} = {AF5336C9-B9C3-4DC9-B902-D9CA920762AC}
 		{9A5775B1-02A2-4F4F-83E0-7B7CE900E2E0} = {01A3CF94-46C8-4F0A-AD19-0C7EF4935C69}
+		{616CAA97-85A3-48C9-8A1C-7E66A1254634} = {AF5336C9-B9C3-4DC9-B902-D9CA920762AC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B50415-4DC2-4974-804C-FE77A5937094}
