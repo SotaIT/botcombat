@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Remove="DefaultCsBot.cs" />
+    <Compile Remove="Resources\DefaultCsBot.cs" />
   </ItemGroup>
 
   <ItemGroup>
