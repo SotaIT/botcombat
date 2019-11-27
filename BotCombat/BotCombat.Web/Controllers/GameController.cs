@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using BotCombat.Web.Converters;
-using BotCombat.Web.JsonModels;
+using BotCombat.Web.Data.Domain;
 using BotCombat.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using Bot = BotCombat.Web.Data.Domain.Bot;
 
 namespace BotCombat.Web.Controllers
 {
@@ -11,19 +11,24 @@ namespace BotCombat.Web.Controllers
     public class GameController : ControllerBase
     {
         private readonly GameService _gameService;
+        private readonly GameDataService _gameDataService;
 
-        public GameController(GameService gameService)
+        public GameController(GameService gameService, GameDataService gameDataService)
         {
             _gameService = gameService;
+            _gameDataService = gameDataService;
         }
 
-        [HttpGet("{id}", Name = "Play")]
-        public Game Play(int id, [FromQuery(Name = "b")] List<int> bots)
+        [HttpGet("create/{id}")]
+        public int? Create(int id, [FromQuery(Name = "b")] List<int> bots)
         {
-            return _gameService.Play(id, bots).ToJsonModel();
+            return _gameService.CreateGame(id, bots).Id;
         }
 
-
-
+        [HttpGet("get/{id}")]
+        public string Get(int id)
+        {
+            return _gameDataService.Get(id).Json;
+        }
     }
 }

@@ -1,3 +1,5 @@
+using System;
+
 namespace BotCombat.Web.Models
 {
     public class ErrorViewModel

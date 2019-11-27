@@ -1,24 +1,25 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <UserSecretsId>aspnet-BotCombat.Web-452F0FB4-8E01-4D82-BB17-CCE64BE9B3DA</UserSecretsId>
-    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>aspnet-BotCombat.Web-CF9904E4-372B-42F2-8B58-8AE34CCC3328</UserSecretsId>
   </PropertyGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.8.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.0.0" />
   </ItemGroup>
 
 
   <ItemGroup>
+    <ProjectReference Include="..\BotCombat.BotWorld\BotCombat.BotWorld.csproj" />
+    <ProjectReference Include="..\BotCombat.BuiltInBots\BotCombat.BuiltInBots.csproj" />
     <ProjectReference Include="..\BotCombat.Core\BotCombat.Core.csproj" />
-    <ProjectReference Include="..\BotCombat.Cs\BotCombat.Cs.csproj" />
-    <ProjectReference Include="..\BotCombat.Js\BotCombat.Js.csproj" />
+    <ProjectReference Include="..\BotCombat.JsBots\BotCombat.JsBots.csproj" />
   </ItemGroup>
 
 </Project>

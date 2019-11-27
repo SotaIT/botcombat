@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Text;
 
-namespace BotCombat.BotUtils.Extensions
+namespace BotCombat.BotUtils
 {
     public static class AssemblyExtensions
     {
@@ -10,10 +10,10 @@ namespace BotCombat.BotUtils.Extensions
         {
             using (var resourceStream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{name}"))
                 if (resourceStream != null)
-                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-                    {
-                        return reader.ReadToEnd();
-                    }
+                {
+                    using var reader = new StreamReader(resourceStream, Encoding.UTF8);
+                    return reader.ReadToEnd();
+                }
 
             return null;
         }

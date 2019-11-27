@@ -1,28 +1,63 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using BotCombat.Web.Data.Domain;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using BotCombat.Web.Models;
 using BotCombat.Web.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BotCombat.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ILogger<HomeController> _logger;
         private readonly GameService _gameService;
+        private readonly GameDataService _gameDataService;
 
-        public HomeController(GameService gameService)
+        public HomeController(ILogger<HomeController> logger, GameService gameService, GameDataService gameDataService)
         {
+            _logger = logger;
             _gameService = gameService;
+            _gameDataService = gameDataService;
         }
 
         public IActionResult Index()
         {
-            var mapId = 1;
-            var botIds = new List<int> {2, 3, 5, 6};
+            return View();
 
-            var game = _gameService.GetGame(mapId, botIds);
+            //var game = _gameService.CreateGame(1, new List<int> {1, 2});
+            //_gameService.QueueGame(game);
+            //_gameService.PlayGame(game);
 
-            return View(game);
+            //return Content(game.Json);
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            var game = _gameService.CreateGame(1, new List<int> { 1, 2 });
+            _gameService.QueueGame(game);
+            _gameService.PlayGame(game);
+
+            return Content(game.Json);
+        }
+
+        [HttpGet]
+        public IActionResult Game(int id)
+        {
+            var game = _gameDataService.Get(id);
+            if (game == null)
+                return NotFound();
+
+            return (GameStates) game.State switch
+            {
+                GameStates.Created => View("~/Views/Home/Game.Created.cshtml", game),
+                GameStates.Queued => View("~/Views/Home/Game.Queued.cshtml", game),
+                GameStates.Played => View(game),
+                GameStates.Error => View("~/Views/Home/Game.Error.cshtml", game),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         public IActionResult Privacy()

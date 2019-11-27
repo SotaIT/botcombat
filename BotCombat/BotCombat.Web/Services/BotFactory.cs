@@ -1,25 +1,20 @@
 ﻿using System;
-using BotCombat.Abstractions;
-using BotCombat.Cs;
-using BotCombat.Js;
+using BotCombat.BotWorld;
+using BotCombat.BuiltInBots;
+using BotCombat.JsBots;
+using BotCombat.Web.Data.Domain;
 
 namespace BotCombat.Web.Services
 {
     public static class BotFactory
     {
-        public enum BotType
-        {
-            CSharp = 0,
-            Javascript = 1
-        }
-
-        public static IBot CreateBot(BotType type, int id, string code = null)
+        public static IBot CreateBot(BotTypes type, int id, string code = null)
         {
             switch (type)
             {
-                case BotType.CSharp:
-                    return new CsBot(id, code);
-                case BotType.Javascript:
+                case BotTypes.Builtin:
+                    return BuiltinBotFactory.GetBot(id, code);
+                case BotTypes.Javascript:
                     return new JsBot(id, code);
             }
 

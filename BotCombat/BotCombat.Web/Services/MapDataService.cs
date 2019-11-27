@@ -1,51 +1,30 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using BotCombat.Web.Data;
 using BotCombat.Web.Data.Domain;
 
 namespace BotCombat.Web.Services
 {
-    public class MapDataService : BaseDataService
+    public class MapDataService : BaseDataService<Map>
     {
         public MapDataService(ApplicationDbContext db) : base(db)
         {
         }
 
-        public Core.Models.Map GetCoreMap(int mapId)
+        private IQueryable<T> GetMapObjectsQuery<T>() where T: class, IMapObject
         {
-            var dbMap = GetMap(mapId);
-            if (dbMap == null)
-                return null;
-
-            return new Core.Models.Map(dbMap.Id,
-                dbMap.Width,
-                dbMap.Height,
-                dbMap.Scale,
-                dbMap.InitialPower,
-                dbMap.StrengthWeight,
-                dbMap.StaminaWeight,
-                GetMapWalls(mapId).Select(w => new Core.Models.Wall(w.X, w.Y)).ToList(),
-                GetMapBonuses(mapId).Select(b => new Core.Models.Bonus(b.Id, b.X, b.Y, b.Power)).ToList(),
-                GetMapTraps(mapId).Select(t => new Core.Models.Trap(t.X, t.Y, t.Damage)).ToList());
+            return Db.Set<T>();
         }
 
-        public Map GetMap(int mapId)
+        private IQueryable<T> GetMapObjectsQuery<T>(int mapId) where T: class, IMapObject
         {
-            return Db.Maps.FirstOrDefault(m => m.Id == mapId);
+            return GetMapObjectsQuery<T>().Where(i => i.MapId == mapId);
         }
 
-        public IQueryable<Wall> GetMapWalls(int mapId)
+        public List<T> GetMapObjects<T>(int mapId) where T: class, IMapObject
         {
-            return Db.Walls.Where(i => i.MapId == mapId);
+            return GetMapObjectsQuery<T>(mapId).ToList();
         }
-
-        public IQueryable<Bonus> GetMapBonuses(int mapId)
-        {
-            return Db.Bonuses.Where(i => i.MapId == mapId);
-        }
-
-        public IQueryable<Trap> GetMapTraps(int mapId)
-        {
-            return Db.Traps.Where(i => i.MapId == mapId);
-        }
+        
     }
 }

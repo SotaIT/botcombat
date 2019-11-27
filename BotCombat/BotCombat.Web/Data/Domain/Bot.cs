@@ -1,15 +1,10 @@
 ﻿namespace BotCombat.Web.Data.Domain
 {
-    public class Bot
+    public class Bot: IEntity
     {
         public int Id { get; set; }
-
         public string Name { get; set; }
-
-        public int ImageId { get; set; }
-
         public int Type { get; set; }
-
         public string Code { get; set; }
     }
 }

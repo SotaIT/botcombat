@@ -1,0 +1,17 @@
+﻿@model BotCombat.Web.Data.Domain.Game
+@{
+    ViewData["Title"] = "Game #" + Model.Id;
+}
+<h1>@ViewData["Title"]</h1>
+
+<div class="text-center">
+    <canvas id="canvas" style="background-color: beige"></canvas><!-- style="width:100%"-->
+    <div id="log"></div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded',
+        function() {
+            var game = new Game($.parseJSON('@Html.Raw(Model.Json)'), '#canvas', '#log');
+            game.play();
+        });
+</script>
