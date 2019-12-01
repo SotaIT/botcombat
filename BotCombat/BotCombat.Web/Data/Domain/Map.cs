@@ -17,5 +17,7 @@
         public int BulletSpeed { get; set; }
         public int MaxBotCount { get; set; }
         public int RangedWeight { get; set; }
+        public int ActionTimeout { get; set; }
+        public int MemoryLimit { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace BotCombat.Web.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            var game = _gameService.CreateGame(1, new List<int> { 1, 2 });
+            var game = _gameService.CreateGame(1, new List<int> { 1, 2, 3, 4, 5 });
             _gameService.QueueGame(game);
             _gameService.PlayGame(game);
 

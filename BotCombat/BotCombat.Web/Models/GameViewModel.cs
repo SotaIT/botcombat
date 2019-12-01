@@ -14,6 +14,9 @@ namespace BotCombat.Web.Models
             Dictionary<int, int> bonusImages,
             Dictionary<int, int> trapImages,
             Dictionary<int, int> botImages,
+            Dictionary<int, int> bulletImages,
+            Dictionary<int, int> shotImages,
+            Dictionary<int, int> explosionImages,
             Dictionary<int, string> images)
         {
             Game = game;
@@ -24,6 +27,9 @@ namespace BotCombat.Web.Models
             BonusImages = bonusImages;
             TrapImages = trapImages;
             BotImages = botImages;
+            BulletImages = bulletImages;
+            ShotImages = shotImages;
+            ExplosionImages = explosionImages;
             Images = images;
         }
 
@@ -35,6 +41,9 @@ namespace BotCombat.Web.Models
         public Dictionary<int, int> BonusImages { get; }
         public Dictionary<int, int> TrapImages { get; }
         public Dictionary<int, int> BotImages { get; }
+        public Dictionary<int, int> BulletImages { get; }
+        public Dictionary<int, int> ShotImages { get; }
+        public Dictionary<int, int> ExplosionImages { get; }
         public Dictionary<int, string> Images { get; }
     }
 }

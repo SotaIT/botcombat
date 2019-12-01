@@ -21,7 +21,6 @@
     let frameNumber = 0;
 
     const images = {};
-    const bulletImages = {};
     let loadingImageCount = 0;
 
 
@@ -31,7 +30,7 @@
         for (let im in model.Images)
             if (model.Images.hasOwnProperty(im)) {
                 let img = new Image();
-                img.src = '/img/' + model.Images[im];
+                img.src = model.Images[im];
                 img.onload = imageLoaded();
                 images[im] = img;
                 loadingImageCount++;
@@ -47,12 +46,7 @@
     }
 
     function getBulletImage(id) {
-        if (!bulletImages.hasOwnProperty(id)) {
-            let img = new Image();
-            img.src = images[model.BotImages[id]].src.replace('/img/bot/', '/img/bot/bullet-');
-            bulletImages[id] = img;
-        }
-        return bulletImages[id];
+        return images[model.BulletImages[id]];
     }
 
     function getBonusImage(id) {
@@ -179,6 +173,7 @@
 
         for (let i = 0; i < step.Bl.length; i++) {
             const bl = step.Bl[i];
+
             let x = bl.X * scale, y = bl.Y * scale;
             let sx = 0, sy = 0;
 
@@ -193,7 +188,7 @@
                 y = getBulletMoveOffset(prev.Y, bl.Y, next.Y);
             }
 
-            ctx.drawImage(getBulletImage(step.Bl[i].Id), sx, sy, objectSize, objectSize, x, y, scale, scale);
+            ctx.drawImage(getBulletImage(bl.Id), sx, sy, objectSize, objectSize, x, y, scale, scale);
         }
     }
 

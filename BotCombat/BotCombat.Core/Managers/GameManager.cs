@@ -40,22 +40,32 @@ namespace BotCombat.Core
         /// <summary>
         /// Adds the bots to the map
         /// </summary>
-        private void AddBots(IEnumerable<IBot> bots)
+        private void AddBots(IEnumerable<IBot> ibots)
         {
             var availablePoints = _settings.StartPoints.Count > 0
                 ? _settings.StartPoints.ToList()
                 : _map.GetEmptyPoints();
-            var random = new Random();
+            var bots = ibots.ToList();
 
+            var predefinedPoints = availablePoints.Where(p => p.BotId.HasValue).ToList();
+            foreach (var point in predefinedPoints)
+            {
+                var bot = bots.FirstOrDefault(b => b.Id == point.BotId);
+                if (bot == null) continue;
+                
+                bots.Remove(bot);
+                availablePoints.Remove(point);
+                _map.Add(new BotManager(bot, point.X, point.Y, _settings, _game));
+            }
+
+            var random = new Random();
             foreach (var bot in bots)
             {
                 if (availablePoints.Count == 0)
                     throw new Exception("Not enough place for bots!");
 
-                var pointIndex = random.Next(availablePoints.Count);
-                var point = availablePoints[pointIndex];
-                availablePoints.RemoveAt(pointIndex);
-
+                var point = availablePoints[random.Next(availablePoints.Count)];
+                availablePoints.Remove(point);
                 _map.Add(new BotManager(bot, point.X, point.Y, _settings, _game));
             }
         }
@@ -67,6 +77,8 @@ namespace BotCombat.Core
                 _map.Bonuses.ToList(),
                 _map.Bots.Select(b => b.ToBot()).ToDictionary(b => b.Id, b => b),
                 _map.Bullets.Select(b => b.ToBullet()).ToList(),
+                _map.Shots.ToList(),
+                _map.Explosions.ToList(),
                 _logs.Where(l => l.Step == StepNumber).ToList()
             ));
 
@@ -122,8 +134,10 @@ namespace BotCombat.Core
             var bullet = bot.Perform(_game);
             _map.Add(bot);
 
-            if (bullet != null)
-                _map.Add(bullet);
+            if (bullet == null) return;
+
+            _map.Add(bullet);
+            _map.Add(bullet.CreateShot());
         }
 
         private void ComputeCollisions()
@@ -217,6 +231,9 @@ namespace BotCombat.Core
 
                     if (!bullet.Exploded)
                         ApplyBullet(bullet);
+
+                    if(bullet.Exploded)
+                        _map.Add(bullet.CreateExplosion());
                 }
         }
 

@@ -58,14 +58,16 @@ namespace BotCombat.BotWorld
                     break;
             }
 
-            // destination out of map or is wall
-            var isWall = x >= Width
-                            || x < 0
-                            || y >= Height
-                            || y < 0
-                            || Walls.Any(w => w.X == x && w.Y == y);
+            // destination is wall
+            var isWall = Walls.Any(w => w.X == x && w.Y == y);
 
-            return new Coordinates(x, y, isWall);
+            // destination out of map
+            var isOut = x >= Width
+                         || x < 0
+                         || y >= Height
+                         || y < 0;
+
+            return new Coordinates(x, y, isWall, isOut);
         }
 
     }

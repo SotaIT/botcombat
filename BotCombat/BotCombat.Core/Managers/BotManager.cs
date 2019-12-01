@@ -115,7 +115,7 @@ namespace BotCombat.Core
             var point = game.Map.GetDestination(botAction, this);
 
             // can't move to specified point
-            if (point.IsWall)
+            if (point.IsRestricted)
                 return;
 
             X = point.X;
@@ -173,7 +173,7 @@ namespace BotCombat.Core
             try
             {
                 var task = Task.Run(func);
-                if (!task.Wait(TimeSpan.FromSeconds(2)))
+                if (!task.Wait(TimeSpan.FromSeconds(_settings.ActionTimeout)))
                     Error("Timeout expired!");
                 return task.Result;
             }

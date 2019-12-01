@@ -18,11 +18,11 @@ namespace BotCombat.Test
         public void Play()
         {
             var mapSettings = new MapSettings(1, 3, 3, 10, 1, 1, 1,
-                int.MaxValue, 5, 1,
+                int.MaxValue, 5, 1, 3, 10,
                 new List<Wall> { new Wall(1, 1, 1) },
                 new List<Bonus> { new Bonus(1, 0, 0, 1) },
                 new List<Trap> { new Trap(1, 2, 2, 1) }, 
-                new List<Coordinates>());
+                new List<StartPoint>());
 
             var gameManager = new GameManager(mapSettings, new List<IBot> { new RandomBot(1), new JsBot(2) });
             var game = gameManager.Play();

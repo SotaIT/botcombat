@@ -10,6 +10,7 @@ using Game = BotCombat.Web.Data.Domain.Game;
 using Map = BotCombat.Web.Data.Domain.Map;
 using Trap = BotCombat.Web.Data.Domain.Trap;
 using Wall = BotCombat.Web.Data.Domain.Wall;
+using StartPoint = BotCombat.Web.Data.Domain.StartPoint;
 
 namespace BotCombat.Web.Services
 {
@@ -73,13 +74,15 @@ namespace BotCombat.Web.Services
                 var bonuses = MapDataService.GetMapObjects<Bonus>(game.MapId);
                 var traps = MapDataService.GetMapObjects<Trap>(game.MapId);
                 var startPoints = MapDataService.GetMapObjects<StartPoint>(game.MapId);
-                var botImageIds = MapDataService.GetMapObjects<BotImage>(game.MapId).Select(bi => bi.ImageId).ToList();
+                var allBotImages = MapDataService.GetMapObjects<BotImage>(game.MapId).ToList();
 
                 // images
                 var wallImages = walls.ToDictionary(o => o.Id, o => o.ImageId);
                 var bonusImages = bonuses.ToDictionary(o => o.Id, o => o.ImageId);
                 var trapImages = traps.ToDictionary(o => o.Id, o => o.ImageId);
-                var botImages = GetBotImages(gameBots, botImageIds);
+                GetBotImages(gameBots, allBotImages, 
+                    out var botImages, out var bulletImages, out var shotImages, out var explosionImages, out var botImageIds);
+
                 var images = GetImagesForViewModel(map, wallImages, bonusImages, trapImages, botImageIds);
 
                 // create mapsettings
@@ -99,6 +102,9 @@ namespace BotCombat.Web.Services
                     bonusImages,
                     trapImages,
                     botImages,
+                    bulletImages,
+                    shotImages,
+                    explosionImages,
                     images);
 
                 // convert to json
@@ -181,27 +187,50 @@ namespace BotCombat.Web.Services
                 map.MaxStepCount ?? int.MaxValue,
                 map.BonusSpawnInterval,
                 map.BulletSpeed,
+                map.ActionTimeout,
+                map.MemoryLimit,
                 walls.Select(w => new BotWorld.Wall(w.Id, w.X, w.Y)).ToList(),
                 bonuses.Select(b => new BotWorld.Bonus(b.Id, b.X, b.Y, b.Power)).ToList(),
                 traps.Select(t => new BotWorld.Trap(t.Id, t.X, t.Y, t.Damage)).ToList(),
-                startPoints.Select(p => new Coordinates(p.X, p.Y)).ToList());
+                startPoints.Select(p => new Core.StartPoint(p.X, p.Y, p.BotId)).ToList());
             return mapSettings;
         }
 
-        private static Dictionary<int, int> GetBotImages(IEnumerable<GameBot> gameBots, IReadOnlyList<int> botImageIds)
+        private static void GetBotImages(IEnumerable<GameBot> gameBots, IReadOnlyList<BotImage> allBotImages, 
+            out Dictionary<int, int> botImages, 
+            out Dictionary<int, int> bulletImages, 
+            out Dictionary<int, int> shotImages, 
+            out Dictionary<int, int> explosionImages, 
+            out List<int> botImageIds)
         {
-            var botImages = new Dictionary<int, int>();
+            botImages = new Dictionary<int, int>();
+            bulletImages = new Dictionary<int, int>();
+            shotImages = new Dictionary<int, int>();
+            explosionImages = new Dictionary<int, int>();
+            botImageIds = new List<int>();
+
             var botImageIndex = 0;
+            var firsCycle = true;
             foreach (var gameBot in gameBots)
             {
-                botImages[gameBot.BotId] = botImageIds[botImageIndex];
+                botImages[gameBot.BotId] = allBotImages[botImageIndex].ImageId;
+                bulletImages[gameBot.BotId] = allBotImages[botImageIndex].BulletImageId;
+                shotImages[gameBot.BotId] = allBotImages[botImageIndex].ShotImageId;
+                explosionImages[gameBot.BotId] = allBotImages[botImageIndex].ExplosionImageId;
+
+                if (firsCycle)
+                {
+                    botImageIds.Add(allBotImages[botImageIndex].ImageId);
+                    botImageIds.Add(allBotImages[botImageIndex].BulletImageId);
+                    botImageIds.Add(allBotImages[botImageIndex].ShotImageId);
+                    botImageIds.Add(allBotImages[botImageIndex].ExplosionImageId);
+                }
 
                 botImageIndex++;
-                if (botImageIndex > botImageIds.Count)
-                    botImageIndex = 0;
+                if (botImageIndex < allBotImages.Count) continue;
+                botImageIndex = 0;
+                firsCycle = false;
             }
-
-            return botImages;
         }
 
         private Dictionary<int, string> GetImagesForViewModel(Map map, Dictionary<int, int> wallImages, Dictionary<int, int> bonusImages,

@@ -29,6 +29,9 @@ namespace BotCombat.Web
                 WallImages = viewModel.WallImages,
                 TrapImages = viewModel.TrapImages,
                 BonusImages = viewModel.BonusImages,
+                BulletImages = viewModel.BulletImages,
+                ShotImages = viewModel.ShotImages,
+                ExplosionImages = viewModel.ExplosionImages,
                 BotImages = viewModel.BotImages,
                 Images = viewModel.Images
             };
@@ -63,6 +66,8 @@ namespace BotCombat.Web
                 Bs = step.Bonuses.Select(ToJsonModel),
                 Bt = step.Bots.Values.Select(ToJsonModel),
                 Bl = step.Bullets.Select(ToJsonModel),
+                Ss = step.Shots.Select(ToJsonModel),
+                Es = step.Explosions.Select(ToJsonModel),
                 L = step.Logs.Select(ToJsonModel)
             };
         }
@@ -123,7 +128,7 @@ namespace BotCombat.Web
 
         private static int? ToInt(this bool value)
         {
-            return value ? 1 : (int?) null;
+            return value ? 1 : (int?)null;
         }
     }
 }

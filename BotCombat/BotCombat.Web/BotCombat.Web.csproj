@@ -5,6 +5,10 @@
     <UserSecretsId>aspnet-BotCombat.Web-CF9904E4-372B-42F2-8B58-8AE34CCC3328</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="ToDo.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.0.0" />

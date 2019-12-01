@@ -1,6 +1,6 @@
 ﻿namespace BotCombat.BotWorld
 {
-    public class Bullet: MapObject, IDamager
+    public class Bullet: MapObject, IDamager, IDirection
     {
         public Bullet(int id, int number, int x, int y, int damage, int direction, bool exploded) : base(id, x, y)
         {

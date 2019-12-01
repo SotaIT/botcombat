@@ -26,7 +26,7 @@ namespace BotCombat.Core
         {
             var point = game.Map.GetDestination(Direction, this);
 
-            if (point.IsWall)
+            if (point.IsRestricted)
             {
                 Explode();
                 return;
@@ -44,6 +44,16 @@ namespace BotCombat.Core
         public Bullet ToBullet()
         {
             return new Bullet(Id, Number, X, Y, Damage, (int)Direction, Exploded);
+        }
+
+        public IMapObject CreateShot()
+        {
+            return new Shot(Id, X, Y, (int)Direction);
+        }
+
+        public IMapObject CreateExplosion()
+        {
+            return new Explosion(Id, X, Y);
         }
     }
 }

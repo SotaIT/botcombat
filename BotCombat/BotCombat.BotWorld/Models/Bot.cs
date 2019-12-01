@@ -3,7 +3,7 @@
     /// <summary>
     /// A bot is moving on the map, trying to get bonuses, escape traps and kill other bots
     /// </summary>
-    public class Bot : MapObject, IDamager
+    public class Bot : MapObject, IDamager, IDirection
     {
         public Bot(int id, int x, int y, int health, int damage, string error, int direction, bool damaged) : base(id, x, y)
         {

@@ -96,10 +96,10 @@ namespace BotCombat.Core
         }
 
         internal IEnumerable<BotManager> Bots => GetObjects<BotManager>();
-
         internal IEnumerable<Bonus> Bonuses => GetObjects<Bonus>();
-
         internal IEnumerable<BulletManager> Bullets => GetObjects<BulletManager>();
+        internal IEnumerable<Shot> Shots => GetObjects<Shot>();
+        internal IEnumerable<Explosion> Explosions => GetObjects<Explosion>();
 
         /// <summary>
         /// Gets all IMapObjects of the specified type from the point
@@ -112,14 +112,14 @@ namespace BotCombat.Core
         /// <summary>
         /// Gets all empty points from the map
         /// </summary>
-        internal List<Coordinates> GetEmptyPoints()
+        internal List<StartPoint> GetEmptyPoints()
         {
-            var emptyPoints = new List<Coordinates>();
+            var emptyPoints = new List<StartPoint>();
 
             for (var x = 0; x < _settings.Width; x++)
                 for (var y = 0; y < _settings.Height; y++)
                     if (IsEmpty(x, y))
-                        emptyPoints.Add(new Coordinates(x, y));
+                        emptyPoints.Add(new StartPoint(x, y));
 
             return emptyPoints;
         }
