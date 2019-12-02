@@ -49,6 +49,14 @@
         return images[model.BulletImages[id]];
     }
 
+    function getShotImage(id) {
+        return images[model.ShotImages[id]];
+    }
+
+    function getExplosionImage(id) {
+        return images[model.ExplosionImages[id]];
+    }
+
     function getBonusImage(id) {
         return images[model.BonusImages[id]];
     }
@@ -69,7 +77,7 @@
         let f = Math.floor(8 * 8 * frameNumber * speed / scale);
         while (f > 7)
             f -= 8;
-        return objectSize * f;
+        return objectSize * f + objectSize;
     }
 
     function getPrevBot(id) {
@@ -87,19 +95,19 @@
         switch (dr) {
             // up
             case 2:
-                return objectSize;
+                return 0;
             // right
             case 3:
-                return objectSize * 4;
+                return objectSize;
             // down
             case 4:
-                return objectSize * 3;
+                return objectSize * 2;
             // left
             case 5:
-                return objectSize * 2;
+                return objectSize * 3;
             // none
             default:
-                return 0;
+                return -1;
         }
     }
 
@@ -117,7 +125,7 @@
             if (prevBot) {
                 sx = computeSx();
                 sy = getDirOffset(bt.Dr);
-                if (sy === 0)
+                if (bt.X === prevBot.X && bt.Y === prevBot.Y) 
                     sx = 0;
 
                 x = getBotMoveOffset(prevBot.X, bt.X);
@@ -149,20 +157,20 @@
         return x1 * scale + diff * frameNumber;
     }
 
-    function getNewPos(dr, x, y) {
+    function getNewPos(dr, x, y, itemSpeed) {
         switch (dr) {
             // up
             case 2:
-                return { X: x, Y: y - bulletSpeed };
+                return { X: x, Y: y - itemSpeed };
             // right
             case 3:
-                return { X: x + bulletSpeed, Y: y };
+                return { X: x + itemSpeed, Y: y };
             // down
             case 4:
-                return { X: x, Y: y + bulletSpeed };
+                return { X: x, Y: y + itemSpeed };
             // left
             case 5:
-                return { X: x - bulletSpeed, Y: y };
+                return { X: x - itemSpeed, Y: y };
             // none
             default:
                 return { X: x, Y: y };
@@ -183,12 +191,37 @@
             if (prev) {
                 sy = getDirOffset(bl.Dr);
                 sx = computeSx();
-                const next = getNewPos(bl.Dr, prev.X, prev.Y);
+                const next = getNewPos(bl.Dr, prev.X, prev.Y, bulletSpeed);
                 x = getBulletMoveOffset(prev.X, bl.X, next.X);
                 y = getBulletMoveOffset(prev.Y, bl.Y, next.Y);
             }
 
             ctx.drawImage(getBulletImage(bl.Id), sx, sy, objectSize, objectSize, x, y, scale, scale);
+        }
+    }
+
+    function drawShots(ctx, step) {
+
+        for (let i = 0; i < step.Ss.length; i++) {
+            const s = step.Ss[i];
+            const next = getNewPos(s.Dr, s.X, s.Y, 1);
+            const x = next.X * scale,
+                y = next.Y * scale,
+                sy = getDirOffset(s.Dr),
+                sx = computeSx();
+            ctx.drawImage(getShotImage(s.Id), sx, sy, objectSize, objectSize, x, y, scale, scale);
+        }
+    }
+
+    function drawExplosions(ctx, step) {
+
+        for (let i = 0; i < step.Es.length; i++) {
+            const e = step.Es[i];
+            const x = e.X * scale,
+                y = e.Y * scale,
+                sy = 0,
+                sx = computeSx();
+            ctx.drawImage(getExplosionImage(e.Id), sx, sy, objectSize, objectSize, x, y, scale, scale);
         }
     }
 
@@ -214,7 +247,8 @@
     }
 
     function drawBackground(ctx) {
-        ctx.drawImage(getBgImage(), 0, 0, map.width, map.height);
+        let bg = getBgImage();
+        ctx.drawImage(bg, 0, 0, width, height);
     }
 
     function startAnimation() {
@@ -234,6 +268,8 @@
         ctx.globalCompositeOperation = 'destination-over';
         ctx.clearRect(0, 0, width, height);
 
+        drawShots(ctx, step);
+        drawExplosions(ctx, step);
         drawWalls(ctx);
         drawBots(ctx, step);
         drawBullets(ctx, step);

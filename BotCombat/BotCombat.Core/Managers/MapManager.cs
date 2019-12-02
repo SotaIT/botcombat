@@ -80,6 +80,22 @@ namespace BotCombat.Core
         }
 
         /// <summary>
+        /// Removes all objects of specified type
+        /// </summary>
+        internal void RemoveAll<T>() where T: IMapObject
+        {
+            var objects = GetObjects<T>().ToList();
+            foreach (var o in objects)
+                Remove(o);
+        }
+
+        internal void RemoveShotsAndExplosions()
+        {
+            RemoveAll<Explosion>();
+            RemoveAll<Shot>();
+        }
+
+        /// <summary>
         /// Gets an IMapObject of the specified type from the point
         /// </summary>
         internal T GetObject<T>(int x, int y) where T : class

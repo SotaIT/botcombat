@@ -88,6 +88,7 @@ namespace BotCombat.Core
         private bool MakeStep()
         {
             ReSpawnBonuses();
+            RemoveShotsAndExplosions();
             PerformBotActions();
             ComputeCollisions();
             MoveBullets();
@@ -95,6 +96,11 @@ namespace BotCombat.Core
 
             var lastStep = _game.Steps[^1];
             return lastStep.Number <= _settings.MaxStepCount && lastStep.Bots.Count > 1;
+        }
+
+        private void RemoveShotsAndExplosions()
+        {
+            _map.RemoveShotsAndExplosions();
         }
 
         private void ReSpawnBonuses()
@@ -231,9 +237,6 @@ namespace BotCombat.Core
 
                     if (!bullet.Exploded)
                         ApplyBullet(bullet);
-
-                    if(bullet.Exploded)
-                        _map.Add(bullet.CreateExplosion());
                 }
         }
 
@@ -249,6 +252,7 @@ namespace BotCombat.Core
                 BulletDamage(bullet, bot);
 
             bullet.Explode();
+            _map.Add(bullet.CreateExplosion());
         }
 
         private void TrapDamage(Trap trap, BotManager target)

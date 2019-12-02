@@ -82,6 +82,17 @@ namespace BotCombat.Web
             };
         }
 
+        private static ShotJsonModel ToJsonModel(this Shot shot)
+        {
+            return new ShotJsonModel
+            {
+                Id = shot.Id,
+                Dr = shot.Direction,
+                X = shot.X,
+                Y = shot.Y
+            };
+        }
+
         private static BotJsonModel ToJsonModel(this Bot bot)
         {
             return new BotJsonModel
