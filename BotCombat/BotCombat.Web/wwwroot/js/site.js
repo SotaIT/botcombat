@@ -7,6 +7,7 @@
     const width = map.Width * scale;
     const height = map.Height * scale;
     const bulletSpeed = model.BulletSpeed;
+    const frameCount = 8;
 
     const canvas = $(canvasId);
     const log = $(logId)[0];
@@ -15,7 +16,7 @@
     canvas.attr('height', height);
 
     const speed = 1 / 2 / 2 / 2;
-    const frameInterval = speed * scale / 8;
+    const frameInterval = speed * scale / frameCount;
     const objectSize = scale;
     let stepNumber = 0;
     let frameNumber = 0;
@@ -74,9 +75,9 @@
     }
 
     function computeSx() {
-        let f = Math.floor(8 * 8 * frameNumber * speed / scale);
-        while (f > 7)
-            f -= 8;
+        let f = Math.floor(frameNumber * speed);
+        while (f > frameCount - 1)
+            f -= frameCount;
         return objectSize * f + objectSize;
     }
 
@@ -147,14 +148,26 @@
         return null;
     }
 
-    function getBulletMoveOffset(x1, x2, x3) {
-        if (x3 === x1) return x1 * scale;
-        let diff = x2 - x1;
-        if (x3 > x2)
-            diff++;
-        else if (x3 < x2)
-            diff--;
-        return x1 * scale + diff * frameNumber;
+    function getBulletMoveOffset(prev, real, next) {
+        if (next === prev) return prev * scale;
+
+        const up = next > real;
+        const down = next < real;
+        let diff = real - prev;
+
+        if (up || down) {
+
+            const realScaled = real * scale;
+            if (up)
+                diff++;
+            else
+                diff--;
+            const newReal = prev * scale + diff * frameNumber;
+            return newReal > realScaled && up || newReal < realScaled && !up
+                ? -1
+                : newReal;
+        }
+        return prev * scale + diff * frameNumber;
     }
 
     function getNewPos(dr, x, y, itemSpeed) {
@@ -184,6 +197,7 @@
 
             let x = bl.X * scale, y = bl.Y * scale;
             let sx = 0, sy = 0;
+            let show = true;
 
             let prev = getPrevBullet(bl.Id, bl.N);
             if (prev === null)
@@ -194,9 +208,11 @@
                 const next = getNewPos(bl.Dr, prev.X, prev.Y, bulletSpeed);
                 x = getBulletMoveOffset(prev.X, bl.X, next.X);
                 y = getBulletMoveOffset(prev.Y, bl.Y, next.Y);
+                show = x !== -1 && y !== -1;
             }
 
-            ctx.drawImage(getBulletImage(bl.Id), sx, sy, objectSize, objectSize, x, y, scale, scale);
+            if(show)
+                ctx.drawImage(getBulletImage(bl.Id), sx, sy, objectSize, objectSize, x, y, scale, scale);
         }
     }
 
