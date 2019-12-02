@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -53,12 +52,9 @@ namespace BotCombat.BotWorld
                 case BotAction.MoveRight:
                 case BotAction.MoveDown:
                 case BotAction.MoveLeft:
-                    break;
-                default:
-                    return new Coordinates(x, y);
+                    return GetDestination(botAction.ToDirection(), x, y);
             }
-
-            return GetDestination(botAction.ToDirection(), x, y);
+            return new Coordinates(x, y);
         }
 
         public Coordinates GetDestination(Direction direction, IMapObject mapObject)
