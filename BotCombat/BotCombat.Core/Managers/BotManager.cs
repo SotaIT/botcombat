@@ -81,7 +81,7 @@ namespace BotCombat.Core
 
         public int Y { get; private set; }
 
-        public BotAction Direction { get; private set; } = BotAction.MoveRight;
+        public Direction Direction { get; private set; } = Direction.Right;
 
         /// <summary>
         /// Performs the bot action
@@ -109,10 +109,10 @@ namespace BotCombat.Core
             Damaged = false;
 
             // save last direction to be able to show to which direction is the bot turn on
-            Direction = botAction;
+            Direction = botAction.ToDirection();
 
             // calculate the destination point
-            var point = game.Map.GetDestination(botAction, this);
+            var point = game.Map.GetMoveDestination(botAction, this);
 
             // can't move to specified point
             if (point.IsRestricted)

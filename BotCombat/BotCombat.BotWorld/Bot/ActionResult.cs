@@ -33,5 +33,25 @@
         {
             BotAction = BotAction.MoveLeft;
         }
+
+        public void TurnUp()
+        {
+            BotAction = BotAction.TurnUp;
+        }
+
+        public void TurnRight()
+        {
+            BotAction = BotAction.TurnRight;
+        }
+
+        public void TurnDown()
+        {
+            BotAction = BotAction.TurnDown;
+        }
+
+        public void TurnLeft()
+        {
+            BotAction = BotAction.TurnLeft;
+        }
     }
 }

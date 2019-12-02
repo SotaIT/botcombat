@@ -4,7 +4,7 @@ namespace BotCombat.Core
 {
     public class BulletManager : IDamager
     {
-        public BulletManager(int id, int number, int x, int y, int damage, BotAction direction)
+        public BulletManager(int id, int number, int x, int y, int damage, Direction direction)
         {
             Damage = damage;
             Direction = direction;
@@ -19,7 +19,7 @@ namespace BotCombat.Core
         public int X { get; private set; }
         public int Y { get; private set; }
         public int Damage { get; }
-        public BotAction Direction { get; }
+        public Direction Direction { get; }
         public bool Exploded { get; private set; }
 
         public void Move(Game game)

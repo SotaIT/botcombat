@@ -95,16 +95,16 @@
     function getDirOffset(dr) {
         switch (dr) {
             // up
-            case 2:
+            case 1:
                 return 0;
             // right
-            case 3:
+            case 2:
                 return objectSize;
             // down
-            case 4:
+            case 3:
                 return objectSize * 2;
             // left
-            case 5:
+            case 4:
                 return objectSize * 3;
             // none
             default:
@@ -173,16 +173,16 @@
     function getNewPos(dr, x, y, itemSpeed) {
         switch (dr) {
             // up
-            case 2:
+            case 1:
                 return { X: x, Y: y - itemSpeed };
             // right
-            case 3:
+            case 2:
                 return { X: x + itemSpeed, Y: y };
             // down
-            case 4:
+            case 3:
                 return { X: x, Y: y + itemSpeed };
             // left
-            case 5:
+            case 4:
                 return { X: x - itemSpeed, Y: y };
             // none
             default:

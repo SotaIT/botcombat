@@ -30,32 +30,60 @@ namespace BotCombat.BotWorld
         public IReadOnlyList<Trap> Traps { get; }
 
 
-        public Coordinates GetDestination(int direction, int x, int y)
+        public Coordinates GetMoveDst(int botAction, int x, int y)
         {
-            return GetDestination((BotAction)direction, x, y);
+            return GetMoveDestination((BotAction)botAction, x, y);
         }
 
-        public Coordinates GetDestination(BotAction direction, IMapObject mapObject)
+        public Coordinates GetDst(int direction, int x, int y)
+        {
+            return GetDestination((Direction)direction, x, y);
+        }
+
+        public Coordinates GetMoveDestination(BotAction direction, IMapObject mapObject)
+        {
+            return GetMoveDestination(direction, mapObject.X, mapObject.Y);
+        }
+
+        public Coordinates GetMoveDestination(BotAction botAction, int x, int y)
+        {
+            switch (botAction)
+            {
+                case BotAction.MoveUp:
+                case BotAction.MoveRight:
+                case BotAction.MoveDown:
+                case BotAction.MoveLeft:
+                    break;
+                default:
+                    return new Coordinates(x, y);
+            }
+
+            return GetDestination(botAction.ToDirection(), x, y);
+        }
+
+        public Coordinates GetDestination(Direction direction, IMapObject mapObject)
         {
             return GetDestination(direction, mapObject.X, mapObject.Y);
         }
 
-        public Coordinates GetDestination(BotAction direction, int x, int y)
+        public Coordinates GetDestination(Direction direction, int x, int y)
         {
             switch (direction)
             {
-                case BotAction.MoveUp:
+                case Direction.Up:
                     y--;
                     break;
-                case BotAction.MoveRight:
+                case Direction.Right:
                     x++;
                     break;
-                case BotAction.MoveDown:
+                case Direction.Down:
                     y++;
                     break;
-                case BotAction.MoveLeft:
+                case Direction.Left:
                     x--;
                     break;
+                default:
+                    return new Coordinates(x, y);
             }
 
             // destination is wall
@@ -63,9 +91,9 @@ namespace BotCombat.BotWorld
 
             // destination out of map
             var isOut = x >= Width
-                         || x < 0
-                         || y >= Height
-                         || y < 0;
+                        || x < 0
+                        || y >= Height
+                        || y < 0;
 
             return new Coordinates(x, y, isWall, isOut);
         }
