@@ -6,6 +6,6 @@
     };
 
     this.chooseAction = function (game, result) {
-        result.BotAction = Math.floor(Math.random() * 9) + 1;
+        result.BotAction = Math.floor(Math.random() * 5) + 1;
     };
 }

@@ -126,7 +126,7 @@
             if (prevBot) {
                 sx = computeSx();
                 sy = getDirOffset(bt.Dr);
-                if (bt.X === prevBot.X && bt.Y === prevBot.Y) 
+                if (bt.X === prevBot.X && bt.Y === prevBot.Y)
                     sx = 0;
 
                 x = getBotMoveOffset(prevBot.X, bt.X);
@@ -211,7 +211,7 @@
                 show = x !== -1 && y !== -1;
             }
 
-            if(show)
+            if (show)
                 ctx.drawImage(getBulletImage(bl.Id), sx, sy, objectSize, objectSize, x, y, scale, scale);
         }
     }
@@ -229,10 +229,13 @@
         }
     }
 
-    function drawExplosions(ctx, step) {
+    function drawExplosions(ctx, steps, stepNumber) {
+        //draw explosions of previous step in current step
+        if (stepNumber === 0) return;
+        const st = steps[stepNumber - 1];
 
-        for (let i = 0; i < step.Es.length; i++) {
-            const e = step.Es[i];
+        for (let i = 0; i < st.Es.length; i++) {
+            const e = st.Es[i];
             const x = e.X * scale,
                 y = e.Y * scale,
                 sy = 0,
@@ -285,7 +288,7 @@
         ctx.clearRect(0, 0, width, height);
 
         drawShots(ctx, step);
-        drawExplosions(ctx, step);
+        drawExplosions(ctx, steps, stepNumber);
         drawWalls(ctx);
         drawBots(ctx, step);
         drawBullets(ctx, step);

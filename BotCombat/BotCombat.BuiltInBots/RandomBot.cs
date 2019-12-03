@@ -17,7 +17,7 @@ namespace BotCombat.BuiltInBots
         /// </summary>
         public override ActionResult ChooseAction(Game game)
         {
-            return ActionResult(new Random().Next(9) + 1);
+            return ActionResult(new Random().Next(5) + 1);
         }
 
         public override StatsResult DistributePower(Game game, int power)

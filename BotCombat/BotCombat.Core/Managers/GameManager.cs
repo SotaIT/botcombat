@@ -89,9 +89,12 @@ namespace BotCombat.Core
         {
             ReSpawnBonuses();
             RemoveShotsAndExplosions();
+            RemoveDeadBots();
+
             PerformBotActions();
             ComputeCollisions();
-            MoveBullets();
+            ComputeShots();
+
             CreateStep();
 
             var lastStep = _game.Steps[^1];
@@ -129,7 +132,6 @@ namespace BotCombat.Core
 
         private void PerformBotActions()
         {
-            RemoveDeadBots();
             foreach (var bot in _map.Bots.ToList())
                 PerformBotAction(bot);
         }
@@ -222,7 +224,7 @@ namespace BotCombat.Core
         /// <summary>
         /// Bulletes move and make damage
         /// </summary>
-        private void MoveBullets()
+        private void ComputeShots()
         {
             // remove exploaded bullets
             foreach (var bullet in _map.GetObjects<BulletManager>().Where(b => b.Exploded).ToList())
