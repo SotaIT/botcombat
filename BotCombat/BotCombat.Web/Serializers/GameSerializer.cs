@@ -104,7 +104,8 @@ namespace BotCombat.Web
                 D = bot.Damage,
                 Dr = bot.Direction,
                 E = bot.Error,
-                Dd = bot.Damaged.ToInt()
+                IsD = bot.IsDamaged.ToInt(),
+                IsS = bot.IsStunned.ToInt()
             };
         }
 

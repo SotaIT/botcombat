@@ -66,12 +66,12 @@ namespace BotCombat.Core
             get => _damageTaken;
             set
             {
-                Damaged = true;
+                IsDamaged = true;
                 _damageTaken = value;
             }
         }
 
-        private bool Damaged { get; set; }
+        private bool IsDamaged { get; set; }
 
         private int Power { get; set; }
 
@@ -83,11 +83,21 @@ namespace BotCombat.Core
 
         public Direction Direction { get; private set; } = Direction.Right;
 
+        public bool IsStunned { get; private set; }
+
         /// <summary>
         /// Performs the bot action
         /// </summary>
         public BulletManager Perform(Game game)
         {
+            // if the tank was hit by a bullet
+            // it can't do anything for one step
+            if (IsStunned)
+            {
+                IsStunned = false;
+                return null;
+            }
+
             var botAction = ChooseAction(game);
             // bot does nothing
             if (botAction == null || botAction.Value == BotAction.Stop)
@@ -106,7 +116,7 @@ namespace BotCombat.Core
         private void Move(Game game, BotAction botAction)
         {
             // reset damaged
-            Damaged = false;
+            IsDamaged = false;
 
             // save last direction to be able to show to which direction is the bot turn on
             Direction = botAction.ToDirection();
@@ -129,7 +139,7 @@ namespace BotCombat.Core
 
         public Bot ToBot()
         {
-            return new Bot(Id, X, Y, Health, Damage, ErrorMessage, (int)Direction, Damaged);
+            return new Bot(Id, X, Y, Health, Damage, ErrorMessage, (int)Direction, IsDamaged, IsStunned);
         }
 
         private void CheckPowerDistribution()
@@ -183,5 +193,11 @@ namespace BotCombat.Core
                 return null;
             }
         }
+
+        public void Stun()
+        {
+            IsStunned = true;
+        }
+
     }
 }

@@ -270,6 +270,7 @@ namespace BotCombat.Core
         private void BulletDamage(BulletManager bullet, BotManager bot)
         {
             Damage(LogType.Ranged, bullet, bot);
+            bot.Stun();
         }
 
         private void Damage(LogType logType, IDamager source, BotManager target)

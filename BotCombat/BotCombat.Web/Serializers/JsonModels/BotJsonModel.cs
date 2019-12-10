@@ -23,8 +23,13 @@
         public string E { get; set; }
 
         /// <summary>
-        /// Damaged
+        /// IsDamaged
         /// </summary>
-        public int? Dd { get; set; }
+        public int? IsD { get; set; }
+
+        /// <summary>
+        /// IsStunned
+        /// </summary>
+        public int? IsS { get; set; }
     }
 }

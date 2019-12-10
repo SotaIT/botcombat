@@ -5,13 +5,14 @@
     /// </summary>
     public class Bot : MapObject, IDamager, IDirection
     {
-        public Bot(int id, int x, int y, int health, int damage, string error, int direction, bool damaged) : base(id, x, y)
+        public Bot(int id, int x, int y, int health, int damage, string error, int direction, bool isDamaged, bool isStunned) : base(id, x, y)
         {
             Health = health;
             Damage = damage;
             Error = error;
             Direction = direction;
-            Damaged = damaged;
+            IsDamaged = isDamaged;
+            IsStunned = isStunned;
         }
 
         /// <summary>
@@ -37,6 +38,11 @@
         /// <summary>
         /// Is damaged during current step
         /// </summary>
-        public bool Damaged { get; }
+        public bool IsDamaged { get; }
+
+        /// <summary>
+        /// Is stunned during current step
+        /// </summary>
+        public bool IsStunned { get; }
     }
 }
