@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿
 using System.Reflection;
 using BotCombat.BotUtils;
 using BotCombat.BotWorld;
@@ -40,7 +39,7 @@ namespace BotCombat.JsBots
             return result;
         }
 
-        private static string DefaultSourceCode =>
+        public static string DefaultSourceCode =>
             Assembly
                 .GetCallingAssembly()
                 .GetEmbeddedResource("Resources.DefaultJsBot.js");
