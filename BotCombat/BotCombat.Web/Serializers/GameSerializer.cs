@@ -33,7 +33,8 @@ namespace BotCombat.Web
                 ShotImages = viewModel.ShotImages,
                 ExplosionImages = viewModel.ExplosionImages,
                 BotImages = viewModel.BotImages,
-                Images = viewModel.Images
+                Images = viewModel.Images,
+                BotNames = viewModel.BotNames
             };
         }
 
@@ -103,7 +104,6 @@ namespace BotCombat.Web
                 H = bot.Health,
                 D = bot.Damage,
                 Dr = bot.Direction,
-                E = bot.Error,
                 IsD = bot.IsDamaged.ToInt(),
                 IsS = bot.IsStunned.ToInt()
             };

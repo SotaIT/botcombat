@@ -25,7 +25,7 @@ namespace BotCombat.Test
                 new List<StartPoint>());
 
             var gameManager = new GameManager(mapSettings, new List<IBot> { new RandomBot(1), new JsBot(2) });
-            var game = gameManager.Play();
+            var game = gameManager.DebugPlay(out List<DebugMessage> msg);
 
             Assert.Pass();
         }

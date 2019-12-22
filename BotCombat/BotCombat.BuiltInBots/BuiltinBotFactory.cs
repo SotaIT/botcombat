@@ -11,6 +11,8 @@ namespace BotCombat.BuiltInBots
             {
                 case BuiltinBots.RandomBot:
                     return new RandomBot(id);
+                case BuiltinBots.TowerBot:
+                    return new TowerBot(id);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BotCombat.BotWorld;
 
@@ -46,11 +48,6 @@ namespace BotCombat.Core
         /// </summary>
         public bool IsDead => Health < 1;
 
-        /// <summary>
-        /// Error message
-        /// </summary>
-        public string ErrorMessage { get; private set; }
-
         private PowerStats PowerStats
         {
             get => _powerStats;
@@ -81,15 +78,19 @@ namespace BotCombat.Core
 
         public int Y { get; private set; }
 
-        public Direction Direction { get; private set; } = Direction.Right;
+        public Direction Direction { get; private set; } = Direction.Up;
 
         public bool IsStunned { get; private set; }
+
+        private readonly List<DebugMessage> _debugMessages = new List<DebugMessage>();
 
         /// <summary>
         /// Performs the bot action
         /// </summary>
         public BulletManager Perform(Game game)
         {
+            _debugMessages.Clear();
+
             // if the tank was hit by a bullet
             // it can't do anything for one step
             if (IsStunned)
@@ -139,7 +140,7 @@ namespace BotCombat.Core
 
         public Bot ToBot()
         {
-            return new Bot(Id, X, Y, Health, Damage, ErrorMessage, (int)Direction, IsDamaged, IsStunned);
+            return new Bot(Id, X, Y, Health, Damage, (int)Direction, IsDamaged, IsStunned);
         }
 
         private void CheckPowerDistribution()
@@ -155,7 +156,7 @@ namespace BotCombat.Core
 
         private void DistributePower(Game game)
         {
-            var stats= CallBotMethod(() => _iBot.DistributePower(game, Power))?.Stats;
+            var stats = CallBotMethod(() => _iBot.DistributePower(game, Power))?.Stats;
             if (stats != null)
                 PowerStats = stats;
         }
@@ -174,18 +175,30 @@ namespace BotCombat.Core
 
         private void Error(string message)
         {
-            ErrorMessage = message;
+            AddDebugMessage(message, true);
             DamageTaken += Health + 1;
         }
 
-        private TResult CallBotMethod<TResult>(Func<TResult> func) where TResult : class
+        private void AddDebugMessage(string message, bool error = false)
+        {
+            _debugMessages.Add(new DebugMessage { BotId = Id, Message = message, Error = error });
+        }
+
+        private TResult CallBotMethod<TResult>(Func<TResult> func) where TResult : BaseResult
         {
             try
             {
                 var task = Task.Run(func);
                 if (!task.Wait(TimeSpan.FromSeconds(_settings.ActionTimeout)))
                     Error("Timeout expired!");
-                return task.Result;
+                var result = task.Result;
+
+                var messages = result.GetDebugMessages();
+                if (messages != null && messages.Length > 0)
+                    foreach (var m in messages)
+                        AddDebugMessage(m);
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -199,5 +212,9 @@ namespace BotCombat.Core
             IsStunned = true;
         }
 
+        public DebugMessage[] GetDebugMessages()
+        {
+            return _debugMessages.ToArray();
+        }
     }
 }

@@ -5,11 +5,10 @@
     /// </summary>
     public class Bot : MapObject, IDamager, IDirection
     {
-        public Bot(int id, int x, int y, int health, int damage, string error, int direction, bool isDamaged, bool isStunned) : base(id, x, y)
+        public Bot(int id, int x, int y, int health, int damage, int direction, bool isDamaged, bool isStunned) : base(id, x, y)
         {
             Health = health;
             Damage = damage;
-            Error = error;
             Direction = direction;
             IsDamaged = isDamaged;
             IsStunned = isStunned;
@@ -24,11 +23,6 @@
         /// The amount of damage the bot does
         /// </summary>
         public int Damage { get; }
-
-        /// <summary>
-        /// Error message
-        /// </summary>
-        public string Error { get; }
 
         /// <summary>
         /// Bot direction

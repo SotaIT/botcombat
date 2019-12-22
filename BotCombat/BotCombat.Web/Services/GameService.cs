@@ -61,8 +61,18 @@ namespace BotCombat.Web.Services
             return GameDataService.GetGames(GameStates.Queued);
         }
 
-        public void PlayGame(Game game)
+        public Game PlayEditModeGame(int botId, out List<DebugMessage> debugMessages)
         {
+            const int editModeMapId = 2;
+            const int editModeBotId = 2;
+            var game = CreateGame(editModeMapId, new List<int> { botId, editModeBotId });
+            debugMessages = PlayGame(game, true);
+            return game;
+        }
+
+        public List<DebugMessage> PlayGame(Game game, bool debugMode = false)
+        {
+            List<DebugMessage> result = new List<DebugMessage>();
             try
             {
                 // get bots
@@ -80,7 +90,7 @@ namespace BotCombat.Web.Services
                 var wallImages = walls.ToDictionary(o => o.Id, o => o.ImageId);
                 var bonusImages = bonuses.ToDictionary(o => o.Id, o => o.ImageId);
                 var trapImages = traps.ToDictionary(o => o.Id, o => o.ImageId);
-                GetBotImages(gameBots, allBotImages, 
+                GetBotImages(gameBots, allBotImages,
                     out var botImages, out var bulletImages, out var shotImages, out var explosionImages, out var botImageIds);
 
                 var images = GetImagesForViewModel(map, wallImages, bonusImages, trapImages, botImageIds);
@@ -88,9 +98,17 @@ namespace BotCombat.Web.Services
                 // create mapsettings
                 var mapSettings = GetMapSettings(map, walls, bonuses, traps, startPoints);
 
+                // get bots
+                var bots = BotDataService
+                    .Get(gameBots.Select(b => b.BotId).ToList())
+                    .ToList();
+                var botNames = bots.ToDictionary(b => b.Id, b => b.Name);
+
                 // play the game
-                var gameManager = new GameManager(mapSettings, GetIBots(gameBots));
-                var gameModel = gameManager.Play();
+                var gameManager = new GameManager(mapSettings, bots.Select(bot => BotFactory.CreateBot((BotTypes)bot.Type, bot.Id, bot.Code)));
+                var gameModel = debugMode
+                    ? gameManager.DebugPlay(out result)
+                    : gameManager.Play();
 
                 // create viewmodel
                 var viewModel = new GameViewModel(
@@ -105,7 +123,8 @@ namespace BotCombat.Web.Services
                     bulletImages,
                     shotImages,
                     explosionImages,
-                    images);
+                    images,
+                    botNames);
 
                 // convert to json
                 var json = GameSerializer.ToJson(viewModel);
@@ -119,12 +138,18 @@ namespace BotCombat.Web.Services
                 game.Json = json;
                 GameDataService.UpdateGame(game, gameBots);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 game.State = (int)GameStates.Error;
                 GameDataService.UpdateGame(game);
-                throw;
+                if (debugMode)
+                {
+                    result.Add(new DebugMessage { Error = true, Message = ex.Message });
+                }
+                else throw;
             }
+
+            return result;
         }
 
         private static void CalculateStats(BotWorld.Game gameModel, IReadOnlyCollection<GameBot> gameBots)
@@ -196,11 +221,11 @@ namespace BotCombat.Web.Services
             return mapSettings;
         }
 
-        private static void GetBotImages(IEnumerable<GameBot> gameBots, IReadOnlyList<BotImage> allBotImages, 
-            out Dictionary<int, int> botImages, 
-            out Dictionary<int, int> bulletImages, 
-            out Dictionary<int, int> shotImages, 
-            out Dictionary<int, int> explosionImages, 
+        private static void GetBotImages(IEnumerable<GameBot> gameBots, IReadOnlyList<BotImage> allBotImages,
+            out Dictionary<int, int> botImages,
+            out Dictionary<int, int> bulletImages,
+            out Dictionary<int, int> shotImages,
+            out Dictionary<int, int> explosionImages,
             out List<int> botImageIds)
         {
             botImages = new Dictionary<int, int>();

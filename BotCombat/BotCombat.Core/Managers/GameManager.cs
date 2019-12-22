@@ -12,6 +12,8 @@ namespace BotCombat.Core
     {
         private readonly List<Log> _logs = new List<Log>();
 
+        private readonly List<DebugMessage> _debugMessages = new List<DebugMessage>();
+
         private readonly MapManager _map;
 
         private readonly MapSettings _settings;
@@ -19,6 +21,8 @@ namespace BotCombat.Core
         private readonly Map _mapModel;
 
         private Game _game;
+
+        private bool _debugMode;
 
         private readonly List<Step> _steps = new List<Step>();
 
@@ -52,7 +56,7 @@ namespace BotCombat.Core
             {
                 var bot = bots.FirstOrDefault(b => b.Id == point.BotId);
                 if (bot == null) continue;
-                
+
                 bots.Remove(bot);
                 availablePoints.Remove(point);
                 _map.Add(new BotManager(bot, point.X, point.Y, _settings, _game));
@@ -94,11 +98,19 @@ namespace BotCombat.Core
             PerformBotActions();
             ComputeCollisions();
             ComputeShots();
+            CollectDebugMessages();
 
             CreateStep();
 
             var lastStep = _game.Steps[^1];
             return lastStep.Number <= _settings.MaxStepCount && lastStep.Bots.Count > 1;
+        }
+
+        private void CollectDebugMessages()
+        {
+            if (!_debugMode) return;
+            foreach (var bot in _map.Bots.ToList())
+                _debugMessages.AddRange(bot.GetDebugMessages());
         }
 
         private void RemoveShotsAndExplosions()
@@ -116,7 +128,21 @@ namespace BotCombat.Core
         public Game Play()
         {
             while (MakeStep()) { }
+            return _game;
+        }
 
+        public Game DebugPlay(out List<DebugMessage> debugMessages)
+        {
+            _debugMode = true;
+            try
+            {
+                Play();
+            }
+            catch (Exception ex)
+            {
+                AddDebugMessage(ex.Message, true);
+            }
+            debugMessages = _debugMessages;
             return _game;
         }
 
@@ -195,6 +221,13 @@ namespace BotCombat.Core
         private void AddLog(LogType type, int x, int y, int sourceId, int targetId, int value)
         {
             _logs.Add(new Log(LogNumber, type, StepNumber, x, y, sourceId, targetId, value));
+        }
+
+        private void AddDebugMessage(string message, bool error = false, int? botId = null)
+        {
+            if (!_debugMode) return;
+
+            _debugMessages.Add(new DebugMessage { BotId = botId, Message = message, Error = error });
         }
 
         /// <summary>

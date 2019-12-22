@@ -1,26 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BotCombat.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BotCombat.Web.Data;
 using BotCombat.Web.Data.Domain;
 using BotCombat.Web.Models;
+using BotCombat.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BotCombat.Web.Controllers
 {
     [Authorize]
     public class MyBotsController : Controller
     {
+        // todo: move all data methods to service classes
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly GameService _gameService;
         private Author _author;
-        public MyBotsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public MyBotsController(ApplicationDbContext context, UserManager<IdentityUser> userManager, GameService gameService)
         {
             _context = context;
             _userManager = userManager;
+            _gameService = gameService;
         }
 
         public Author Author => _author ??= GetAuthor();
@@ -39,8 +46,34 @@ namespace BotCombat.Web.Controllers
         // GET: MyBots
         public async Task<IActionResult> Index()
         {
-            var bots = await _context.AuthorBots.Where(b => b.AuthorId == Author.Id && b.Status != (int)BotStatus.Deleted).ToListAsync();
-            return View(bots);
+            var authorBots = await _context.AuthorBots.Where(b => b.AuthorId == Author.Id && b.Status != (int)BotStatus.Deleted).ToListAsync();
+            var rootAuthorBotIds = authorBots.Select(ab => ab.GetRootId()).Distinct().ToList();
+            var latestAuthorBots = rootAuthorBotIds.Select(r =>
+            {
+                return authorBots
+                    .Where(ab => ab.GetRootId() == r)
+                    .OrderByDescending(ab => ab.Version)
+                    .FirstOrDefault();
+            }).ToList();
+
+            var botIds = latestAuthorBots.Select(ab => ab.BotId).Distinct().ToList();
+            var bots = await _context.Bots.Where(b => botIds.Contains(b.Id)).ToListAsync();
+            var models = latestAuthorBots.Select(ab =>
+            {
+                var bot = bots.FirstOrDefault(b => b.Id == ab.BotId);
+                if (bot == null)
+                    return null;
+
+                return new BotListItemViewModel
+                {
+                    Id = ab.RootId ?? ab.Id,
+                    Version = ab.Version,
+                    Created = ab.Created,
+                    Status = ab.Status.ToBotStatus(),
+                    Name = bot.Name
+                };
+            });
+            return View(models);
         }
 
         // GET: MyBots/Create
@@ -50,8 +83,6 @@ namespace BotCombat.Web.Controllers
         }
 
         // POST: MyBots/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateBotViewModel model)
@@ -60,7 +91,7 @@ namespace BotCombat.Web.Controllers
             {
                 var authorBot = await CreateBot(model.Name);
 
-                return RedirectToAction(nameof(Edit), new { id = authorBot.Id });
+                return RedirectToAction(nameof(Edit), new { id = authorBot.Id, version = authorBot.Version });
             }
             return RedirectToAction(nameof(Index));
         }
@@ -93,13 +124,13 @@ namespace BotCombat.Web.Controllers
         }
 
         // GET: MyBots/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int version, bool run = false)
         {
-            var authorBot = await GetAuthorBot(id);
+            var authorBot = await GetAuthorBot(id, version);
             if (authorBot == null)
                 return NotFound();
 
-            var rootId = authorBot.RootId ?? authorBot.Id;
+            var rootId = authorBot.GetRootId();
             var versions = await _context.AuthorBots
                 .Where(b => b.AuthorId == Author.Id && (b.RootId == rootId || b.Id == rootId))
                 .ToListAsync();
@@ -107,26 +138,43 @@ namespace BotCombat.Web.Controllers
             var bot = await _context.Bots.FirstOrDefaultAsync(b => b.Id == authorBot.BotId);
             if (bot == null)
                 return NotFound();
-
-            return View(new EditBotViewModel
+            var status = authorBot.Status.ToBotStatus();
+            var model = new EditBotViewModel
             {
-                Id = authorBot.Id,
+                Id = rootId,
                 Version = authorBot.Version,
                 Created = authorBot.Created,
-                Status = (BotStatus)(authorBot.Status ?? 0),
+                Status = status,
                 Name = bot.Name,
                 Code = bot.Code,
-                Versions = versions.OrderBy(b => b.Version).ToArray(),
-                ContinueEdit = true
-            });
+                ContinueEdit = true,
+                Run = run,
+                Versions = versions
+                    .OrderBy(b => b.Version)
+                    .ToArray(),
+                Statuses = status.GetAllowedStatuses()
+                    .Select(s => new SelectListItem(s.ToString(), s.ToString()))
+                    .ToList()
+            };
+
+            if (run)
+            {
+                model.Game = _gameService.PlayEditModeGame(bot.Id, out var debugMessages).Json;
+                model.DebugMessages = debugMessages;
+            }
+
+            return View(model);
         }
 
-        private async Task<AuthorBot> GetAuthorBot(int? id)
+        private async Task<AuthorBot> GetAuthorBot(int? rootId, int version)
         {
-            if (id == null) return null;
+            if (rootId == null) return null;
 
             var authorBot = await _context.AuthorBots
-                .FirstOrDefaultAsync(b => b.AuthorId == Author.Id && b.Id == id.Value && b.Status != (int)BotStatus.Deleted);
+                .FirstOrDefaultAsync(b => b.AuthorId == Author.Id 
+                                          && (b.Id == rootId.Value || b.RootId == rootId.Value)
+                                          && b.Version == version
+                                          && b.Status != (int)BotStatus.Deleted);
             return authorBot;
         }
 
@@ -135,9 +183,9 @@ namespace BotCombat.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Version,Created,Status,Name,Code,ContinueEdit")] EditBotViewModel model)
+        public async Task<IActionResult> Edit(int id, int version, [Bind("Id,Version,Status,Code,ContinueEdit,Run")] EditBotViewModel model)
         {
-            if (id != model.Id)
+            if (id != model.Id || model.Version != version)
                 return NotFound();
 
             if (!ModelState.IsValid)
@@ -145,45 +193,60 @@ namespace BotCombat.Web.Controllers
 
             try
             {
-                var authorBot = await GetAuthorBot(id);
+                var authorBot = await GetAuthorBot(model.Id, model.Version);
                 if (authorBot == null)
                     return NotFound();
                 var bot = await _context.Bots.FirstOrDefaultAsync(b => b.Id == authorBot.BotId);
                 if (bot == null)
                     return NotFound();
 
-                // if bot is in Draft status = change the current bot
-                if ((authorBot.Status ?? 0) == (int)BotStatus.Draft)
+                var rootId = authorBot.GetRootId();
+                var status = authorBot.Status.ToBotStatus();
+
+                // if the code has changed
+                if (bot.Code != model.Code)             
                 {
-                    bot.Name = model.Name;
-                    bot.Code = model.Code;
-                    _context.Update(bot);
-                    await _context.SaveChangesAsync();
-                }
-                else // if the status is not draft
-                {
-                    // if the code changed - create new version
-                    if (bot.Code != model.Code)
+                    // if the bot is in Draft status = change current bot
+                    if (status == BotStatus.Draft)
                     {
-                        var rootId = authorBot.RootId ?? authorBot.Id;
+                        bot.Code = model.Code;
+                        _context.Update(bot);
+                        await _context.SaveChangesAsync();
+                    }
+                    else // For other statuses - create new version
+                    {
                         var versions = await _context.AuthorBots
                             .Where(b => b.AuthorId == Author.Id && (b.RootId == rootId || b.Id == rootId))
                             .ToListAsync();
 
-                        var newBotVersion = await CreateBot(model.Name, 
-                            model.Code, 
-                            authorBot.RootId ?? authorBot.Id, 
-                            authorBot.Id, 
-                            versions.Max(v=>v.Version) + 1);
+                        var newBotVersion = await CreateBot(bot.Name,
+                            model.Code,
+                            rootId,
+                            authorBot.Id,
+                            versions.Max(v => v.Version) + 1);
 
-                        return RedirectToAction(nameof(Edit), new { id = newBotVersion.Id });
+                        return RedirectToAction(nameof(Edit), new { id = model.Id, version = newBotVersion.Version, run = model.Run });
                     }
                 }
-                // if the status has changed
-                if (authorBot.Status != (int) model.Status)
+
+                if (status.IsAllowedStatus(model.Status))
                 {
-                    authorBot.Status = (int) model.Status;
+                    authorBot.Status = (int)model.Status;
                     _context.Update(authorBot);
+
+                    // if it is a public status - make all other versions private
+                    if (model.Status.IsPublicStatus())
+                    {
+                        var versions = await _context.AuthorBots
+                            .Where(b => b.AuthorId == Author.Id && (b.RootId == rootId || b.Id == rootId) && b.Id != authorBot.Id)
+                            .ToListAsync();
+                        foreach (var botVersion in versions.Where(v => v.Status.ToBotStatus().IsPublicStatus()))
+                        {
+                            botVersion.Status = (int)BotStatus.Private;
+                            _context.Update(version);
+                        }
+                    }
+
                     await _context.SaveChangesAsync();
                 }
 
@@ -196,15 +259,15 @@ namespace BotCombat.Web.Controllers
             }
 
             if (model.ContinueEdit)
-                return RedirectToAction(nameof(Edit), new { id });
+                return RedirectToAction(nameof(Edit), new { id = model.Id, version = model.Version, run = model.Run });
 
             return RedirectToAction(nameof(Index));
         }
 
         // GET: MyBots/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, int version = 1)
         {
-            var authorBot = await GetAuthorBot(id);
+            var authorBot = await GetAuthorBot(id, version);
             if (authorBot == null)
                 return NotFound();
 
@@ -214,10 +277,10 @@ namespace BotCombat.Web.Controllers
         // POST: MyBots/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int version = 1)
         {
-            var authorBot = await GetAuthorBot(id);
-            authorBot.Status = (int) BotStatus.Deleted;
+            var authorBot = await GetAuthorBot(id, version);
+            authorBot.Status = (int)BotStatus.Deleted;
             _context.Update(authorBot);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

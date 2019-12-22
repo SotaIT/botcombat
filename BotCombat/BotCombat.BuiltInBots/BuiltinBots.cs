@@ -2,6 +2,7 @@
 {
     public enum BuiltinBots
     {
-        RandomBot
+        RandomBot,
+        TowerBot
     }
 }

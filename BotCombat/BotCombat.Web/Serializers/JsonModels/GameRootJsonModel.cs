@@ -16,5 +16,6 @@ namespace BotCombat.Web
         public Dictionary<int, int> BulletImages { get; set; }
         public Dictionary<int, int> ShotImages { get; set; }
         public Dictionary<int, int> ExplosionImages { get; set; }
+        public Dictionary<int, string> BotNames { get; set; }
     }
 }

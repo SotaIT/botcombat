@@ -1,6 +1,6 @@
 ﻿namespace BotCombat.BotWorld
 {
-    public class ActionResult
+    public class ActionResult: BaseResult
     {
         public BotAction BotAction { get; set; } = BotAction.Stop;
 

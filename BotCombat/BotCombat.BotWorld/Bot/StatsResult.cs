@@ -1,6 +1,6 @@
 ﻿namespace BotCombat.BotWorld
 {
-    public class StatsResult
+    public class StatsResult: BaseResult
     {
         public PowerStats Stats { get; } = new PowerStats();
 

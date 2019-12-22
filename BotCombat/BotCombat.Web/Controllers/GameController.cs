@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using BotCombat.Web.Data.Domain;
 using BotCombat.Web.Services;
 using Microsoft.AspNetCore.Mvc;
-using Bot = BotCombat.Web.Data.Domain.Bot;
 
 namespace BotCombat.Web.Controllers
 {
