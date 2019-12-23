@@ -25,12 +25,6 @@ namespace BotCombat.Web.Controllers
         public IActionResult Index()
         {
             return View();
-
-            //var game = _gameService.CreateGame(1, new List<int> {1, 2});
-            //_gameService.QueueGame(game);
-            //_gameService.PlayGame(game);
-
-            //return Content(game.Json);
         }
 
         [HttpGet]

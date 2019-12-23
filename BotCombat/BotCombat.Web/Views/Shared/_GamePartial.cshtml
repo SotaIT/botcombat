@@ -1,0 +1,38 @@
+﻿@model string
+<canvas id="canvas" style="width: 100%"></canvas>
+<div>
+    <input type="range" id="rangeControl" style="width: 100%" />
+</div>
+<div class="form-row align-items-center">
+    <div class="col-auto">
+        <a id="playStop" class="btn btn-light btn-lg" title="Play/Pause"></a>
+    </div>
+    <div class="col-auto">
+        <select id="speedControl" class="form-control form-control-sm">
+            <option value="8">x1</option>
+            <option value="4">x2</option>
+            <option value="2">x4</option>
+            <option value="1">x8</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <span id="progressText"> -- / --- </span>
+    </div>
+</div>
+<hr />
+<div class="log-container">
+    <div id="log"></div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded',
+        function() {
+            const game = new Game($.parseJSON('@Html.Raw(Model)'), 
+                '#canvas', 
+                '#log', 
+                '#rangeControl', 
+                '#speedControl', 
+                '#playStop',
+                '#progressText');
+            game.play();
+        });
+</script>

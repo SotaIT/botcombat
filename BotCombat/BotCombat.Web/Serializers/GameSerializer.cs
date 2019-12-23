@@ -134,7 +134,8 @@ namespace BotCombat.Web
                 Ti = log.TargetId,
                 V = log.Value,
                 X = log.X,
-                Y = log.Y
+                Y = log.Y,
+                M = log.Message
             };
         }
 

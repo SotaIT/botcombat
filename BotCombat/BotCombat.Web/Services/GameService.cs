@@ -107,7 +107,7 @@ namespace BotCombat.Web.Services
                 // play the game
                 var gameManager = new GameManager(mapSettings, bots.Select(bot => BotFactory.CreateBot((BotTypes)bot.Type, bot.Id, bot.Code)));
                 var gameModel = debugMode
-                    ? gameManager.DebugPlay(out result)
+                    ? gameManager.DebugPlay()
                     : gameManager.Play();
 
                 // create viewmodel
@@ -187,15 +187,6 @@ namespace BotCombat.Web.Services
                         break;
                 }
             }
-        }
-
-        private IEnumerable<IBot> GetIBots(IEnumerable<GameBot> gameBots)
-        {
-            var bots = BotDataService
-                .Get(gameBots.Select(b => b.BotId).ToList())
-                .Select(bot => BotFactory.CreateBot((BotTypes)bot.Type, bot.Id, bot.Code))
-                .ToList();
-            return bots;
         }
 
         private static MapSettings GetMapSettings(Map map, IEnumerable<Wall> walls, IEnumerable<Bonus> bonuses, IEnumerable<Trap> traps,

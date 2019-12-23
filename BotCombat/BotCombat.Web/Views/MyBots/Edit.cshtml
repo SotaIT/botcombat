@@ -40,30 +40,10 @@
     <a asp-action="Index">Back to List</a>
 </div>
 <hr />
-<canvas id="canvas" style="width: 100%"></canvas>
-<div class="form-row">
-
-    <div class="form-group col-sm-1">
-        <a id="playStop" class="btn btn-light"></a>
-    </div>
-    <div class="form-group col-sm-10">
-        <input type="range" id="rangeControl" style="width: 100%" class="form-control" />
-    </div>
-    <div class="form-group col-sm-1">
-        <div class="float-right">
-            <select id="speedSelect" class="form-control">
-                <option value="8">x1</option>
-                <option value="4">x2</option>
-                <option value="2">x4</option>
-                <option value="1">x8</option>
-            </select>
-        </div>
-    </div>
-</div>
-<hr />
-<div class="log-container">
-    <div id="log"></div>
-</div>
+@if (!string.IsNullOrEmpty(Model.Game))
+{
+    await Html.RenderPartialAsync("_GamePartial", Model.Game);
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -76,15 +56,6 @@
                 lineNumbers: true,
                 lineWrapping: true,
                 mode: {name: "javascript", globalVars: true}
-        });
-        document.addEventListener('DOMContentLoaded', function() {
-            @if (!string.IsNullOrEmpty(Model.Game))
-            {
-                <text>
-                    const game = new Game($.parseJSON('@Html.Raw(Model.Game)'), '#canvas', '#log', '#rangeControl', '#speedSelect', '#playStop');
-                    game.play();
-                </text>
-            }
         });
     </script>
 }

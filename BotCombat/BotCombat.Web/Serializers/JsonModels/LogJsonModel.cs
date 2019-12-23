@@ -31,5 +31,10 @@
         /// Value
         /// </summary>
         public int V { get; set; }
+
+        /// <summary>
+        /// Message
+        /// </summary>
+        public string M { get; set; }
     }
 }

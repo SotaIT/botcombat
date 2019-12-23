@@ -12,8 +12,6 @@ namespace BotCombat.Core
     {
         private readonly List<Log> _logs = new List<Log>();
 
-        private readonly List<DebugMessage> _debugMessages = new List<DebugMessage>();
-
         private readonly MapManager _map;
 
         private readonly MapSettings _settings;
@@ -98,7 +96,6 @@ namespace BotCombat.Core
             PerformBotActions();
             ComputeCollisions();
             ComputeShots();
-            CollectDebugMessages();
 
             CreateStep();
 
@@ -106,11 +103,11 @@ namespace BotCombat.Core
             return lastStep.Number <= _settings.MaxStepCount && lastStep.Bots.Count > 1;
         }
 
-        private void CollectDebugMessages()
+        private void CollectDebugMessages(DebugMessage[] debugMessages)
         {
             if (!_debugMode) return;
-            foreach (var bot in _map.Bots.ToList())
-                _debugMessages.AddRange(bot.GetDebugMessages());
+            foreach (var msg in debugMessages)
+                AddDebugMessage(msg.Message, msg.Error, msg.BotId);
         }
 
         private void RemoveShotsAndExplosions()
@@ -131,7 +128,7 @@ namespace BotCombat.Core
             return _game;
         }
 
-        public Game DebugPlay(out List<DebugMessage> debugMessages)
+        public Game DebugPlay()
         {
             _debugMode = true;
             try
@@ -142,7 +139,6 @@ namespace BotCombat.Core
             {
                 AddDebugMessage(ex.Message, true);
             }
-            debugMessages = _debugMessages;
             return _game;
         }
 
@@ -167,6 +163,8 @@ namespace BotCombat.Core
             _map.Remove(bot);
             var bullet = bot.Perform(_game);
             _map.Add(bot);
+
+            CollectDebugMessages(bot.CollectDebugMessages());
 
             if (bullet == null) return;
 
@@ -208,6 +206,7 @@ namespace BotCombat.Core
             {
                 bot.TakeBonus(_game, power);
                 AddLog(LogType.Bonus, bonus.X, bonus.Y, bonus.Id, bot.Id, bonus.Power);
+                CollectDebugMessages(bot.CollectDebugMessages());
             }
 
             // remove bonus from the map
@@ -218,16 +217,16 @@ namespace BotCombat.Core
                 _bonusSpawn[bonus.Id] = StepNumber + _settings.BonusSpawnInterval;
         }
 
-        private void AddLog(LogType type, int x, int y, int sourceId, int targetId, int value)
+        private void AddLog(LogType type, int x, int y, int sourceId, int targetId, int value, string message = null)
         {
-            _logs.Add(new Log(LogNumber, type, StepNumber, x, y, sourceId, targetId, value));
+            _logs.Add(new Log(LogNumber, type, StepNumber, x, y, sourceId, targetId, value, message));
         }
 
         private void AddDebugMessage(string message, bool error = false, int? botId = null)
         {
             if (!_debugMode) return;
 
-            _debugMessages.Add(new DebugMessage { BotId = botId, Message = message, Error = error });
+            AddLog(error ? LogType.Error : LogType.Debug, 0, 0, 0, botId ?? 0, 0, message);
         }
 
         /// <summary>
@@ -306,10 +305,11 @@ namespace BotCombat.Core
             bot.Stun();
         }
 
-        private void Damage(LogType logType, IDamager source, BotManager target)
+        private void Damage(LogType logType, IDamager source, BotManager bot)
         {
-            target.TakeDamage(_game, source.Damage);
-            AddLog(logType, source.X, source.Y, source.Id, target.Id, source.Damage);
+            bot.TakeDamage(_game, source.Damage);
+            AddLog(logType, source.X, source.Y, source.Id, bot.Id, source.Damage);
+            CollectDebugMessages(bot.CollectDebugMessages());
         }
     }
 }

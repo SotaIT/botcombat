@@ -5,7 +5,7 @@
     /// </summary>
     public class Log
     {
-        public Log(int id, LogType type, int step, int x, int y, int sourceId, int targetId, int value)
+        public Log(int id, LogType type, int step, int x, int y, int sourceId, int targetId, int value, string message = null)
         {
             Id = id;
             Step = step;
@@ -15,6 +15,7 @@
             SourceId = sourceId;
             TargetId = targetId;
             Value = value;
+            Message = message;
         }
 
         public int Id { get; }
@@ -46,5 +47,10 @@
         /// The Power got / Damage taken
         /// </summary>
         public int Value { get; }
+
+        /// <summary>
+        /// Message
+        /// </summary>
+        public string Message { get; }
     }
 }

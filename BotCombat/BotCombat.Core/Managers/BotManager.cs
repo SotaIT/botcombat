@@ -89,8 +89,6 @@ namespace BotCombat.Core
         /// </summary>
         public BulletManager Perform(Game game)
         {
-            _debugMessages.Clear();
-
             // if the tank was hit by a bullet
             // it can't do anything for one step
             if (IsStunned)
@@ -212,9 +210,11 @@ namespace BotCombat.Core
             IsStunned = true;
         }
 
-        public DebugMessage[] GetDebugMessages()
+        public DebugMessage[] CollectDebugMessages()
         {
-            return _debugMessages.ToArray();
+            var result = _debugMessages.ToArray();
+            _debugMessages.Clear();
+            return result;
         }
     }
 }
