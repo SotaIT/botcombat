@@ -24,5 +24,6 @@ namespace BotCombat.Web.Data
         public DbSet<GameBot> GameBots { get; set; }
         public DbSet<Author> Authors { get; set; }
         public DbSet<AuthorBot> AuthorBots { get; set; }
+        public DbSet<MapBot> MapBots { get; set; }
     }
 }

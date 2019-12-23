@@ -61,18 +61,17 @@ namespace BotCombat.Web.Services
             return GameDataService.GetGames(GameStates.Queued);
         }
 
-        public Game PlayEditModeGame(int botId, out List<DebugMessage> debugMessages)
+        public Game PlayEditModeGame(int botId)
         {
             const int editModeMapId = 2;
             const int editModeBotId = 2;
             var game = CreateGame(editModeMapId, new List<int> { botId, editModeBotId });
-            debugMessages = PlayGame(game, true);
+            PlayGame(game, true);
             return game;
         }
 
-        public List<DebugMessage> PlayGame(Game game, bool debugMode = false)
+        public void PlayGame(Game game, bool debugMode = false)
         {
-            List<DebugMessage> result = new List<DebugMessage>();
             try
             {
                 // get bots
@@ -84,19 +83,25 @@ namespace BotCombat.Web.Services
                 var bonuses = MapDataService.GetMapObjects<Bonus>(game.MapId);
                 var traps = MapDataService.GetMapObjects<Trap>(game.MapId);
                 var startPoints = MapDataService.GetMapObjects<StartPoint>(game.MapId);
+                var mapBots = MapDataService.GetMapObjects<MapBot>(game.MapId);
                 var allBotImages = MapDataService.GetMapObjects<BotImage>(game.MapId).ToList();
 
                 // images
+                var mapBotImages = allBotImages.Where(bi => mapBots.Any(mb => mb.BotImageId == bi.Id)).ToList();
+                allBotImages.RemoveAll(bi => mapBotImages.Contains(bi));
                 var wallImages = walls.ToDictionary(o => o.Id, o => o.ImageId);
                 var bonusImages = bonuses.ToDictionary(o => o.Id, o => o.ImageId);
                 var trapImages = traps.ToDictionary(o => o.Id, o => o.ImageId);
                 GetBotImages(gameBots, allBotImages,
                     out var botImages, out var bulletImages, out var shotImages, out var explosionImages, out var botImageIds);
 
+                // add map bots as gamebots
+                AddMapBotsAsGameBots(game, mapBots, mapBotImages, gameBots, botImages, bulletImages, shotImages, explosionImages, botImageIds);
+
                 var images = GetImagesForViewModel(map, wallImages, bonusImages, trapImages, botImageIds);
 
                 // create mapsettings
-                var mapSettings = GetMapSettings(map, walls, bonuses, traps, startPoints);
+                var mapSettings = GetMapSettings(map, walls, bonuses, traps, startPoints, mapBots);
 
                 // get bots
                 var bots = BotDataService
@@ -144,12 +149,38 @@ namespace BotCombat.Web.Services
                 GameDataService.UpdateGame(game);
                 if (debugMode)
                 {
-                    result.Add(new DebugMessage { Error = true, Message = ex.Message });
+                    game.Json = GameSerializer.ToJson(ex.Message);
+                    GameDataService.UpdateGame(game);
                 }
                 else throw;
             }
+        }
 
-            return result;
+        private void AddMapBotsAsGameBots(Game game, List<MapBot> mapBots, List<BotImage> mapBotImages, List<GameBot> gameBots, Dictionary<int, int> botImages,
+            Dictionary<int, int> bulletImages, Dictionary<int, int> shotImages, Dictionary<int, int> explosionImages, List<int> botImageIds)
+        {
+            foreach (var mapBot in mapBots)
+            {
+                var botImage = mapBotImages.FirstOrDefault(bi => bi.Id == mapBot.BotImageId);
+                if (botImage == null) throw new Exception($"BotImage #{mapBot.BotImageId} for MapBot #{mapBot.Id} not found!");
+
+                var gameBot = gameBots.FirstOrDefault(gb => gb.BotId == mapBot.BotId);
+                if (gameBot == null)
+                {
+                    gameBot = GameDataService.AddBot(game.Id, mapBot.BotId);
+                    gameBots.Add(gameBot);
+                }
+
+                botImages[mapBot.BotId] = botImage.ImageId;
+                bulletImages[mapBot.BotId] = botImage.BulletImageId;
+                shotImages[mapBot.BotId] = botImage.ShotImageId;
+                explosionImages[mapBot.BotId] = botImage.ExplosionImageId;
+
+                botImageIds.Add(botImage.ImageId);
+                botImageIds.Add(botImage.BulletImageId);
+                botImageIds.Add(botImage.ShotImageId);
+                botImageIds.Add(botImage.ExplosionImageId);
+            }
         }
 
         private static void CalculateStats(BotWorld.Game gameModel, IReadOnlyCollection<GameBot> gameBots)
@@ -189,8 +220,12 @@ namespace BotCombat.Web.Services
             }
         }
 
-        private static MapSettings GetMapSettings(Map map, IEnumerable<Wall> walls, IEnumerable<Bonus> bonuses, IEnumerable<Trap> traps,
-            IEnumerable<StartPoint> startPoints)
+        private static MapSettings GetMapSettings(Map map,
+            IEnumerable<Wall> walls,
+            IEnumerable<Bonus> bonuses,
+            IEnumerable<Trap> traps,
+            IEnumerable<StartPoint> startPoints,
+            IEnumerable<MapBot> mapBots)
         {
             var mapSettings = new MapSettings(
                 map.Id,
@@ -208,7 +243,7 @@ namespace BotCombat.Web.Services
                 walls.Select(w => new BotWorld.Wall(w.Id, w.X, w.Y)).ToList(),
                 bonuses.Select(b => new BotWorld.Bonus(b.Id, b.X, b.Y, b.Power)).ToList(),
                 traps.Select(t => new BotWorld.Trap(t.Id, t.X, t.Y, t.Damage)).ToList(),
-                startPoints.Select(p => new Core.StartPoint(p.X, p.Y, p.BotId)).ToList());
+                startPoints.Select(p => new Core.StartPoint(p.X, p.Y, mapBots.FirstOrDefault(mb => mb.StartPointId == p.Id)?.BotId)).ToList());
             return mapSettings;
         }
 
@@ -265,7 +300,5 @@ namespace BotCombat.Web.Services
         {
             return GameDataService.GetGames(GameStates.Played);
         }
-
-
     }
 }

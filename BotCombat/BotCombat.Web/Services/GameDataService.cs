@@ -37,6 +37,18 @@ namespace BotCombat.Web.Services
             return game;
         }
 
+        public GameBot AddBot(int gameId, int botId)
+        {
+            var gameBot = new GameBot
+            {
+                BotId = botId,
+                GameId = gameId
+            };
+            Db.GameBots.Add(gameBot);
+            Db.SaveChanges();
+            return gameBot;
+        }
+
         public void UpdateGame(Game game, List<GameBot> gameBots = null)
         {
             Db.Games.Update(game);

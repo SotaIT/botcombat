@@ -29,6 +29,5 @@ namespace BotCombat.Web.Models
 
         public AuthorBot[] Versions { get; set; }
         public List<SelectListItem> Statuses { get; set; }
-        public List<DebugMessage> DebugMessages { get; set; }
     }
 }

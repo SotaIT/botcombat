@@ -7,6 +7,16 @@ namespace BotCombat.Web
 {
     internal static class GameSerializer
     {
+        internal static string ToJson(string text)
+        {
+            var json = JsonConvert.SerializeObject(text, new JsonSerializerSettings
+            {
+                Formatting = Formatting.None
+            });
+
+            return json;
+        }
+
         internal static string ToJson(GameViewModel viewModel)
         {
             var json = JsonConvert.SerializeObject(viewModel.ToJsonModel(), new JsonSerializerSettings

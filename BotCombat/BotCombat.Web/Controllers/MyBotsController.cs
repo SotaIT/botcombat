@@ -157,8 +157,7 @@ namespace BotCombat.Web.Controllers
 
             if (run)
             {
-                model.Game = _gameService.PlayEditModeGame(bot.Id, out var debugMessages).Json;
-                model.DebugMessages = debugMessages;
+                model.Game = _gameService.PlayEditModeGame(bot.Id).Json;
             }
 
             return View(model);
