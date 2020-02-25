@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BotCombat.Engine.Contracts;
 using BotCombat.Web.Data;
 using BotCombat.Web.Data.Domain;
+using GameStates = BotCombat.Web.Data.Domain.GameStates;
 
 namespace BotCombat.Web.Services
 {

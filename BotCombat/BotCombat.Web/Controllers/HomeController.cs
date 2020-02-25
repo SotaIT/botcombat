@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using BotCombat.Engine.Contracts;
 using BotCombat.Web.Data.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using BotCombat.Web.Models;
 using BotCombat.Web.Services;
+using GameStates = BotCombat.Web.Data.Domain.GameStates;
 
 namespace BotCombat.Web.Controllers
 {

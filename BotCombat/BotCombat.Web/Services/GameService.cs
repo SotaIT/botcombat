@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using BotCombat.BotWorld;
 using BotCombat.Core;
+using BotCombat.Engine.Contracts;
 using BotCombat.Web.Data.Domain;
 using BotCombat.Web.Models;
 using Bonus = BotCombat.Web.Data.Domain.Bonus;
 using Game = BotCombat.Web.Data.Domain.Game;
+using GameStates = BotCombat.Web.Data.Domain.GameStates;
 using Map = BotCombat.Web.Data.Domain.Map;
 using Trap = BotCombat.Web.Data.Domain.Trap;
 using Wall = BotCombat.Web.Data.Domain.Wall;
@@ -110,10 +112,10 @@ namespace BotCombat.Web.Services
                 var botNames = bots.ToDictionary(b => b.Id, b => b.Name);
 
                 // play the game
-                var gameManager = new GameManager(mapSettings, bots.Select(bot => BotFactory.CreateBot((BotTypes)bot.Type, bot.Id, bot.Code)));
-                var gameModel = debugMode
-                    ? gameManager.DebugPlay()
-                    : gameManager.Play();
+                var gameResult = EngineService.Play(mapSettings, bots.Select(b => new BotSettings { Id = b.Id, Code = b.Code, Type = b.Type }), debugMode).Result;
+                if (gameResult.IsError)
+                    throw new Exception(gameResult.Message);
+                var gameModel = gameResult.Game;
 
                 // create viewmodel
                 var viewModel = new GameViewModel(

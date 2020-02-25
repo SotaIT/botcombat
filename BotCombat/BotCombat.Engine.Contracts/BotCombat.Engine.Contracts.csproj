@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BotCombat.BotWorld\BotCombat.BotWorld.csproj" />
+    <ProjectReference Include="..\BotCombat.Core\BotCombat.Core.csproj" />
+  </ItemGroup>
+
+</Project>

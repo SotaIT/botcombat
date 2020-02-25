@@ -1,10 +1,10 @@
 ﻿using System;
 using BotCombat.BotWorld;
 using BotCombat.BuiltInBots;
+using BotCombat.Engine.Contracts;
 using BotCombat.JsBots;
-using BotCombat.Web.Data.Domain;
 
-namespace BotCombat.Web.Services
+namespace BotCombat.Engine.Services
 {
     public static class BotFactory
     {

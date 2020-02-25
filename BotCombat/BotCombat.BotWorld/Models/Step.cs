@@ -27,8 +27,8 @@ namespace BotCombat.BotWorld
 
 
         public int Number { get; }
-        public ReadOnlyCollection<Shot> Shots { get; }
-        public ReadOnlyCollection<Explosion> Explosions { get; }
+        public IReadOnlyList<Shot> Shots { get; }
+        public IReadOnlyList<Explosion> Explosions { get; }
         public IReadOnlyList<Bonus> Bonuses { get; }
         public IReadOnlyDictionary<int, Bot> Bots { get; }
         public IReadOnlyList<Bullet> Bullets { get; }

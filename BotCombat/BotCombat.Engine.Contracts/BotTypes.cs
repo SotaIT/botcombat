@@ -1,4 +1,4 @@
-﻿namespace BotCombat.Web.Data.Domain
+﻿namespace BotCombat.Engine.Contracts
 {
     public enum BotTypes
     {

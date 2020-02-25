@@ -29,7 +29,7 @@ namespace BotCombat.Core
         public GameManager(MapSettings mapSettings, IEnumerable<IBot> bots)
         {
             _settings = mapSettings;
-            _mapModel = new Map(_settings.Id, _settings.Width, _settings.Height, _settings.Walls, _settings.Traps);
+            _mapModel = new Map(_settings.Id, _settings.Width, _settings.Height, _settings.Walls.ToList(), _settings.Traps.ToList());
             _map = new MapManager(_settings);
 
             AddBots(bots);
@@ -44,7 +44,7 @@ namespace BotCombat.Core
         /// </summary>
         private void AddBots(IEnumerable<IBot> ibots)
         {
-            var availablePoints = _settings.StartPoints.Count > 0
+            var availablePoints = _settings.StartPoints.Any()
                 ? _settings.StartPoints.ToList()
                 : _map.GetEmptyPoints();
             var bots = ibots.ToList();

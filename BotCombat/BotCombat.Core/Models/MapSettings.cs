@@ -17,10 +17,10 @@ namespace BotCombat.Core
             int bulletSpeed,
             int actionTimeout,
             int memoryLimit,
-            List<Wall> walls,
-            List<Bonus> bonuses,
-            List<Trap> traps,
-            List<StartPoint> startPoints)
+            IEnumerable<Wall> walls,
+            IEnumerable<Bonus> bonuses,
+            IEnumerable<Trap> traps,
+            IEnumerable<StartPoint> startPoints)
         {
             Id = id;
             Width = width;
@@ -52,9 +52,9 @@ namespace BotCombat.Core
         public int BulletSpeed { get; }
         public int ActionTimeout { get; }
         public int MemoryLimit { get; }
-        public List<Wall> Walls { get; }
-        public List<Bonus> Bonuses { get; }
-        public List<Trap> Traps { get; }
-        public List<StartPoint> StartPoints { get; }
+        public IEnumerable<Wall> Walls { get; }
+        public IEnumerable<Bonus> Bonuses { get; }
+        public IEnumerable<Trap> Traps { get; }
+        public IEnumerable<StartPoint> StartPoints { get; }
     }
 }
